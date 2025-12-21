@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.MainWindow" Title="AvaloniaUI"
+    xmlns:Pages="clr-namespace:AvaloniaUI.Pages">
+    <Grid>
+        <Grid x:Name="Pages">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Background="red">
+                <Button Content="X" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="5" x:Name="btn_Settings"/>
+            </Grid>
+
+            <Pages:HomePage Grid.Column="1"/>
+        </Grid>
+        <Grid x:Name="Settings" Background="#a0000000">
+            <Pages:SettingsPage Margin="100" />
+        </Grid>
+    </Grid>
+</Window>

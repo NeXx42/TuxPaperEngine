@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.HomePage">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="500"/>
+    </Grid.ColumnDefinitions>
+
+    <Grid Grid.Column="0" x:Name="grid_Content">
+      <ScrollViewer>
+        <WrapPanel x:Name="grid_Content_Container" Margin="10" HorizontalAlignment="Center" ItemSpacing="15" LineSpacing="15"/>
+      </ScrollViewer>
+    </Grid>
+
+    <Grid x:Name="grid_SidePanel" Background="Red" Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="80"/>
+      </Grid.RowDefinitions>
+
+      <ScrollViewer Margin="50">
+        <StackPanel Spacing="20">
+          <Label x:Name="lbl_SidePanel_Title" Content="NAME" HorizontalAlignment="Center" FontSize="26"/>
+          <Border x:Name="img_SidePanel_Icon" Background="Green" Width="400" Height="400" />
+
+          <Label Content="Fill"/>
+          <ComboBox x:Name="inp_SidePanel_Scaling"/>
+
+          <Label Content="Clamp"/>
+          <ComboBox x:Name="inp_SidePanel_Clamp"/>
+
+          <Label Content="Offset X"/>
+          <Slider x:Name="inp_SidePanel_OffsetX"/>
+          <Label Content="Offset Y"/>
+          <Slider x:Name="inp_SidePanel_OffsetY"/>
+        </StackPanel>
+      </ScrollViewer>
+      <Grid Background="Gray" Grid.Row="1" VerticalAlignment="Bottom" Height="80">
+        <Button x:Name="btn_SidePanel_Set" Content="Set"/>
+      </Grid>
+    </Grid>
+
+  </Grid>
+</UserControl>
