@@ -6,4 +6,4 @@ https://github.com/NeXx42/linux-wallpaperengine
 ![ezgif-2d38ef5be79c38e9](https://github.com/user-attachments/assets/98d16764-7562-48bf-ac5c-9b08fe79ce66)
 
 **WORK IN PROGRESS**
-<img width="1692" height="951" alt="2025-12-21-220659_hyprshot" src="https://github.com/user-attachments/assets/6ab78bb4-cc88-4e36-8b7c-fd8fc764c7d1" />
+<img width="1921" height="1081" alt="2025-12-21-224936_hyprshot" src="https://github.com/user-attachments/assets/346d2641-d570-4b22-9032-582c7a435b29" />
