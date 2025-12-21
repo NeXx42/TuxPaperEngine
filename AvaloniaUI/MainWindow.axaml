@@ -10,14 +10,14 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" Background="red">
+            <Grid Grid.Column="0" Background="{DynamicResource bg_Panel}">
                 <Button Content="X" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="5" x:Name="btn_Settings"/>
             </Grid>
 
             <Pages:HomePage Grid.Column="1"/>
         </Grid>
         <Grid x:Name="Settings" Background="#a0000000">
-            <Pages:SettingsPage Margin="100" />
+            <Pages:SettingsPage x:Name="Page_Settings" Margin="100" />
         </Grid>
     </Grid>
 </Window>

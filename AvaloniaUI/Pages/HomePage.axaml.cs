@@ -14,7 +14,7 @@ public partial class HomePage : UserControl
     public const string DEFAULT_SCALING_NAME = "Default";
 
     public const int ENTRY_SIZE = 150;
-    public const int ENTRIES_PER_PAGE = 5;
+    public const int ENTRIES_PER_PAGE = 999;
 
     private long? currentlySelectedWallpaper;
 
@@ -37,7 +37,7 @@ public partial class HomePage : UserControl
         inp_SidePanel_Clamp.SelectedIndex = 0;
         inp_SidePanel_Clamp.ItemsSource = options;
 
-        btn_SidePanel_Set.Click += (_, __) => SetWallpaper();
+        btn_SidePanel_Set.RegisterClick(SetWallpaper);
 
         inp_SidePanel_OffsetY.Minimum = -1;
         inp_SidePanel_OffsetY.Maximum = 1;

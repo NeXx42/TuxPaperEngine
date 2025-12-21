@@ -1,7 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.HomePage">
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.HomePage"
+  xmlns:Common="clr-namespace:AvaloniaUI.Avalonia.Common">
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
@@ -14,16 +15,19 @@
       </ScrollViewer>
     </Grid>
 
-    <Grid x:Name="grid_SidePanel" Background="Red" Grid.Column="1">
+    <Grid x:Name="grid_SidePanel" Background="{DynamicResource bg_Panel}" Grid.Column="1">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="80"/>
       </Grid.RowDefinitions>
 
-      <ScrollViewer Margin="50">
+      <ScrollViewer Margin="30">
         <StackPanel Spacing="20">
           <Label x:Name="lbl_SidePanel_Title" Content="NAME" HorizontalAlignment="Center" FontSize="26"/>
-          <Border x:Name="img_SidePanel_Icon" Background="Green" Width="400" Height="400" />
+
+          <Border Background="Black" Width="400" Height="400" CornerRadius="5" BoxShadow="0 0 5 0 Black">
+            <Border x:Name="img_SidePanel_Icon" Background="Green" Margin="2" CornerRadius="5" ClipToBounds="True"/>
+          </Border>
 
           <Label Content="Fill"/>
           <ComboBox x:Name="inp_SidePanel_Scaling"/>
@@ -37,9 +41,11 @@
           <Slider x:Name="inp_SidePanel_OffsetY"/>
         </StackPanel>
       </ScrollViewer>
-      <Grid Background="Gray" Grid.Row="1" VerticalAlignment="Bottom" Height="80">
-        <Button x:Name="btn_SidePanel_Set" Content="Set"/>
-      </Grid>
+      <Border Background="{DynamicResource bg_Panel_Light}" Grid.Row="1" VerticalAlignment="Bottom" Height="80" Margin="10" CornerRadius="5">
+        <Grid>
+          <Common:Common_Button x:Name="btn_SidePanel_Set" Label="Set" Width="200" Height="40"/>
+        </Grid>
+      </Border>
     </Grid>
 
   </Grid>

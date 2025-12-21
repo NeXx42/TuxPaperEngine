@@ -1,5 +1,4 @@
 using CSharpSqliteORM;
-using Gdk;
 using Logic.db;
 
 namespace Logic;
@@ -8,11 +7,12 @@ public static class ConfigManager
 {
     public enum ConfigKeys
     {
+        ExecutableLocation,
         WorkshopLocations,
     }
 
-    public static string[]? localWorkshopLocations;
-    public static Screen[]? screens;
+    public static string[]? localWorkshopLocations { private set; get; }
+    public static Screen[]? screens { private set; get; }
 
 
     public static async Task Init()
@@ -21,13 +21,11 @@ public static class ConfigManager
         await Database_Manager.Init(dbPath);
 
         await LoadWorkshopLocations();
-
-        //FindMonitors();
     }
 
     private static async Task LoadWorkshopLocations()
     {
-        dbo_Config[] entries = await Database_Manager.GetItems<dbo_Config>(SQLFilter.Equal(nameof(dbo_Config.key), ConfigKeys.WorkshopLocations.ToString()));
+        dbo_Config[] entries = await GetConfigValues(ConfigKeys.WorkshopLocations);
 
         if (entries.Length == 0)
         {
@@ -39,30 +37,20 @@ public static class ConfigManager
         }
     }
 
-    private static void FindMonitors()
-    {
+    public static void RegisterDisplays(Screen[] screens) => ConfigManager.screens = screens;
 
-        Display display = Display.Default;
-        int monitorCount = display.NMonitors;
 
-        screens = new Screen[monitorCount];
 
-        for (int i = 0; i < monitorCount; i++)
-        {
-            screens[i] = new Screen(display.GetMonitor(i));
-        }
-    }
+
+    public static async Task<dbo_Config?> GetConfigValue(ConfigKeys key) => (await GetConfigValues(key)).FirstOrDefault();
+    public static async Task<dbo_Config[]> GetConfigValues(ConfigKeys key) => await Database_Manager.GetItems<dbo_Config>(SQLFilter.Equal(nameof(dbo_Config.key), key.ToString()));
+
+
 
 
     public struct Screen
     {
         public string screenName;
-        public float offsetX;
-        public float offsetY;
-
-        public Screen(Gdk.Monitor monitor)
-        {
-            screenName = monitor.Display.Name;
-        }
+        public int priority;
     }
 }

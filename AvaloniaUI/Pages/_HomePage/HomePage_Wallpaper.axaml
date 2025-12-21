@@ -2,10 +2,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200" x:Class="AvaloniaUI.Pages._HomePage.HomePage_Wallpaper">
-  <Border Background="Yellow">
-    <Grid>
+  <Border Background="Black" CornerRadius="5" ClipToBounds="True">
+    <Grid Margin="1">
       <Border x:Name="img_Icon"/>
-      <Label x:Name="lbl_Title"/>
+      <Label x:Name="lbl_Title" Content="Test" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
     </Grid>
   </Border>
 </UserControl>

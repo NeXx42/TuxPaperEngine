@@ -5,9 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GdkSharp" Version="3.24.24.117-develop" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CSharpSqliteORM\CSharpSqliteORM.csproj" />
   </ItemGroup>
 </Project>

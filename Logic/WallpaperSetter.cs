@@ -1,18 +1,43 @@
 using System.Diagnostics;
 using System.IO.IsolatedStorage;
+using Logic.db;
 
 namespace Logic;
 
 public static class WallpaperSetter
 {
-    public const string LINUX_WALLPAPERENGINE = "/home/matth/Downloads/linux-wallpaperengine/build/output/linux-wallpaperengine";
-
-    public static void SetWallpaper(string path, WallpaperOptions options)
+    public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(ConfigManager.Screen[] screens)
     {
-        KillExistingRuns();
+        screens = screens.OrderBy(x => x.priority).ToArray();
+        WallpaperOptions.ScreenSettings[] res = new WallpaperOptions.ScreenSettings[screens.Length];
+
+        float xDivision = 1f / screens.Length;
+
+        for (int i = 0; i < screens.Length; i++)
+        {
+            res[i] = new WallpaperOptions.ScreenSettings()
+            {
+                screenName = screens[i].screenName,
+                offsetX = (i + .5f) * xDivision
+            };
+        }
+
+        return res;
+    }
+
+    public static async void SetWallpaper(string path, WallpaperOptions options)
+    {
+        dbo_Config? val = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.ExecutableLocation);
+
+        if (val == null || string.IsNullOrEmpty(val.value))
+        {
+            throw new Exception("No executable linked");
+        }
+
+        KillExistingRuns(val.value);
 
         ProcessStartInfo info = options.CreateArgList();
-        info.FileName = LINUX_WALLPAPERENGINE;
+        info.FileName = val.value;
         info.ArgumentList.Add(path);
 
         info.UseShellExecute = false;
@@ -25,7 +50,7 @@ public static class WallpaperSetter
         p.Start();
     }
 
-    private static void KillExistingRuns()
+    private static void KillExistingRuns(string exeName)
     {
         foreach (var process in Process.GetProcesses())
         {
@@ -33,7 +58,7 @@ public static class WallpaperSetter
             {
                 var processExe = process.MainModule?.FileName;
 
-                if (processExe != null && Path.GetFullPath(processExe) == LINUX_WALLPAPERENGINE)
+                if (processExe != null && Path.GetFullPath(processExe) == exeName)
                 {
                     process.Kill();
                     process.WaitForExit();
