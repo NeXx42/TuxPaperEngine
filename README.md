@@ -7,3 +7,13 @@ https://github.com/NeXx42/linux-wallpaperengine
 
 **WORK IN PROGRESS**
 <img width="1921" height="1081" alt="2025-12-21-224936_hyprshot" src="https://github.com/user-attachments/assets/346d2641-d570-4b22-9032-582c7a435b29" />
+
+
+
+```bash
+git clone https://github.com/NeXx42/linux-wallpaperengine-gui.git --recursive
+```
+
+```bash
+make publish
+```

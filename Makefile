@@ -15,7 +15,7 @@ publish:
 		-o ${OUTPUT_DIR}/${PROGRAM_NAME}
 		
 	# gtk overlay
-	cd linux-wallpaperengine && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make
-	cp -r linux-wallpaperengine/build/output ${OUTPUT_DIR}/${PROGRAM_NAME}/engine
+	cd Engine && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make
+	cp -r Engine/build/output ${OUTPUT_DIR}/${PROGRAM_NAME}/engine
 		
 	#tar -czvf ${OUTPUT_DIR}/GameLibrary.Avalonia.tar.gz -C ${OUTPUT_DIR} Avalonia
