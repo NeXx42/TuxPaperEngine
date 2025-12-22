@@ -17,10 +17,8 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Logic\Logic.csproj" />
-
     <EngineFiles Include="..\Engine\build\output\**\*.*" />
   </ItemGroup>
   <Target Name="CopyFolder" AfterTargets="Build">

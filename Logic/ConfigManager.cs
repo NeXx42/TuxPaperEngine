@@ -12,8 +12,8 @@ public static class ConfigManager
     }
 
     public static string[]? localWorkshopLocations { private set; get; }
-    public static Screen[]? screens { private set; get; }
 
+    private static Screen[]? screens;
 
     public static async Task Init()
     {
@@ -39,7 +39,22 @@ public static class ConfigManager
     }
 
     public static void RegisterDisplays(Screen[] screens) => ConfigManager.screens = screens;
+    public static Screen[] GetScreensOrdered() => screens!.OrderBy(x => x.priority).ThenBy(x => x.screenName).ToArray();
 
+    public static Task UpdateDisplayOrder(string screenName, int to)
+    {
+        for (int i = 0; i < screens!.Length; i++)
+        {
+            if (screens[i].screenName == screenName)
+            {
+                screens[i].priority = to;
+                // update config to save this
+                return Task.CompletedTask;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
 
 
 

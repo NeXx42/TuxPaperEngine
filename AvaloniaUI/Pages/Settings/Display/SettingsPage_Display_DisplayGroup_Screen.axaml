@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="200" x:Class="AvaloniaUI.Pages.Settings.Display.SettingsPage_Display_DisplayGroup_Screen">
+  <Border Background="Red">
+    <Grid>
+      <Label x:Name="lbl_ScreenName" Content="HDMI-A-1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+      <TextBox x:Name="inp_Priority" VerticalAlignment="Bottom" Width="100" Height="20" Margin="0, 0, 0, 20"/>
+    </Grid>
+  </Border>
+</UserControl>

@@ -9,7 +9,7 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia.Styling;
 
-namespace AvaloniaUI.Avalonia.Common
+namespace AvaloniaUI.Common
 {
     public partial class Common_Button : UserControl
     {

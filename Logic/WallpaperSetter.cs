@@ -30,7 +30,7 @@ public static class WallpaperSetter
 
     public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(float offsetX, float offsetY)
     {
-        ConfigManager.Screen[] screens = ConfigManager.screens!.OrderBy(x => x.priority).ToArray();
+        ConfigManager.Screen[] screens = ConfigManager.GetScreensOrdered();
         WallpaperOptions.ScreenSettings[] res = new WallpaperOptions.ScreenSettings[screens.Length];
 
         float midWay = (screens.Length - 1) * .5f;

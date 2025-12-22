@@ -2,7 +2,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.SettingsPage"
-  xmlns:Common="clr-namespace:AvaloniaUI.Avalonia.Common">
+  xmlns:Common="clr-namespace:AvaloniaUI.Common"
+  xmlns:Settings_Display="clr-namespace:AvaloniaUI.Pages.Settings.Display">
   <Border Background="Green" CornerRadius="25" Margin="20" BoxShadow="0 0 25 0 Black">
     <Grid Margin="10" ColumnSpacing="10">
       <Grid.ColumnDefinitions>
@@ -18,19 +19,7 @@
 
       <Grid Grid.Column="1" Background="Blue">
         <ScrollViewer Margin="10">
-
-          <!--  Displays -->
-          <StackPanel x:Name="setting_Display" IsVisible="True">
-            <Label Content="Display Settings" HorizontalAlignment="Center" FontSize="20"/>
-
-            <StackPanel x:Name="setting_Display_cont_Screens">
-
-            </StackPanel>
-          </StackPanel>
-
-
-
-          <!--  Displays -->
+          <Settings_Display:SettingsPage_Display x:Name="SettingsGroup_Display"/>
         </ScrollViewer>
       </Grid>
 
