@@ -1,6 +1,6 @@
 [submodule "Engine"]
 	path = Engine
-	url = https://github.com/NeXx42/linux-wallpaperengine.git
+	url = https://github.com/NeXx42/linux-wallpaperengine-fork.git
 [submodule "Database"]
 	path = Database
 	url = https://github.com/NeXx42/CSharpSqliteORM.git
