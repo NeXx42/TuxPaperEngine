@@ -1,4 +1,5 @@
 using CSharpSqliteORM;
+using Logic.Database;
 using Logic.db;
 
 namespace Logic;
@@ -38,22 +39,44 @@ public static class ConfigManager
         }
     }
 
-    public static void RegisterDisplays(Screen[] screens) => ConfigManager.screens = screens;
+    public static async Task RegisterDisplays(Screen[] screens)
+    {
+        dbo_ScreenSettings[] existingConfigs = await Database_Manager.GetItems<dbo_ScreenSettings>();
+
+        for (int i = 0; i < screens.Length; i++)
+        {
+            dbo_ScreenSettings? savedSetting = existingConfigs.FirstOrDefault(x => x.screenName.Equals(screens[i].screenName));
+
+            if (savedSetting == null)
+                continue;
+
+            screens[i].priority = savedSetting.screenOrder ?? 0;
+        }
+
+        ConfigManager.screens = screens;
+
+    }
+
     public static Screen[] GetScreensOrdered() => screens!.OrderBy(x => x.priority).ThenBy(x => x.screenName).ToArray();
 
-    public static Task UpdateDisplayOrder(string screenName, int to)
+    public static async Task UpdateDisplayOrder(string screenName, int to)
     {
         for (int i = 0; i < screens!.Length; i++)
         {
             if (screens[i].screenName == screenName)
             {
                 screens[i].priority = to;
-                // update config to save this
-                return Task.CompletedTask;
+
+                dbo_ScreenSettings newSetting = new dbo_ScreenSettings()
+                {
+                    screenName = screenName,
+                    screenOrder = to
+                };
+
+                await Database_Manager.AddOrUpdate(newSetting, (x) => SQLFilter.Equal(nameof(newSetting.screenName), screenName), nameof(newSetting.screenOrder));
+                return;
             }
         }
-
-        return Task.CompletedTask;
     }
 
 
