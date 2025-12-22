@@ -88,20 +88,7 @@ public partial class HomePage : UserControl
         options.scalingOption = inp_SidePanel_Scaling.SelectedIndex - 1 >= 0 ? (WallpaperSetter.ScalingOptions)(inp_SidePanel_Scaling.SelectedIndex - 1) : null;
         options.clampOptions = (WallpaperSetter.ClampOptions)inp_SidePanel_Clamp.SelectedIndex;
 
-        WallpaperSetter.WallpaperOptions.ScreenSettings a = GetScreenOptions("DP-3", .25f);
-        WallpaperSetter.WallpaperOptions.ScreenSettings b = GetScreenOptions("HDMI-A-1", -.25f);
-        options.screens = [a, b];
-
+        options.screens = WallpaperSetter.WorkOutScreenOffsets((float)inp_SidePanel_OffsetX.Value, (float)inp_SidePanel_OffsetY.Value);
         WallpaperSetter.SetWallpaper(entry!.path, options);
-    }
-
-    private WallpaperSetter.WallpaperOptions.ScreenSettings GetScreenOptions(string screenName, float monitorOffset)
-    {
-        return new WallpaperSetter.WallpaperOptions.ScreenSettings()
-        {
-            screenName = screenName,
-            offsetX = (float)inp_SidePanel_OffsetX.Value + monitorOffset,
-            offsetY = (float)inp_SidePanel_OffsetY.Value,
-        };
     }
 }

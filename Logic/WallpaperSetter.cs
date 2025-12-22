@@ -19,7 +19,7 @@ public static class WallpaperSetter
             return;
         }
 
-        const string exeDir = "engine/linux-wallpaperengine";
+        const string exeDir = "Engine/linux-wallpaperengine";
         string localPath = Path.Combine(AppContext.BaseDirectory, exeDir);
 
         if (File.Exists(localPath))
@@ -28,11 +28,12 @@ public static class WallpaperSetter
         }
     }
 
-    public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(ConfigManager.Screen[] screens)
+    public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(float offsetX, float offsetY)
     {
-        screens = screens.OrderBy(x => x.priority).ToArray();
+        ConfigManager.Screen[] screens = ConfigManager.screens!.OrderBy(x => x.priority).ToArray();
         WallpaperOptions.ScreenSettings[] res = new WallpaperOptions.ScreenSettings[screens.Length];
 
+        float midWay = (screens.Length - 1) * .5f;
         float xDivision = 1f / screens.Length;
 
         for (int i = 0; i < screens.Length; i++)
@@ -40,7 +41,8 @@ public static class WallpaperSetter
             res[i] = new WallpaperOptions.ScreenSettings()
             {
                 screenName = screens[i].screenName,
-                offsetX = (i + .5f) * xDivision
+                offsetX = (xDivision * (i - midWay)) + offsetX,
+                offsetY = offsetY
             };
         }
 
