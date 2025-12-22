@@ -27,7 +27,7 @@ public partial class HomePage_Wallpaper : UserControl
         lbl_Title.Content = "loading";
         img_Icon.Background = null;
 
-        await entry.Decode();
+        await entry.DecodeBasic();
         lbl_Title.Content = entry.title;
 
         ImageBrush? brush = await ImageFetcher.GetIcon(entry.id);

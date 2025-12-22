@@ -24,7 +24,7 @@ public partial class MainWindow : Window
         ToggleSettings(false);
     }
 
-    private void RegisterScreens()
+    private async void RegisterScreens()
     {
         List<ConfigManager.Screen> unpackedScreens = new List<ConfigManager.Screen>();
 
@@ -36,8 +36,7 @@ public partial class MainWindow : Window
             });
         }
 
-        ConfigManager.RegisterDisplays(unpackedScreens.ToArray());
-
+        await ConfigManager.RegisterDisplays(unpackedScreens.ToArray());
     }
 
     public void ToggleSettings(bool to)

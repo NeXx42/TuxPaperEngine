@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using AvaloniaUI.Pages._HomePage;
+using AvaloniaUI.Pages._HomePage.WallpaperProperties;
 using AvaloniaUI.Utils;
 using Logic;
 using Logic.Data;
@@ -91,9 +92,49 @@ public partial class HomePage : UserControl
         await entry!.Decode();
         lbl_SidePanel_Title.Content = entry.title;
 
+        DrawWallpaperProperties(entry.properties);
+
         ImageBrush? brush = await ImageFetcher.GetIcon(id);
         img_SidePanel_Icon.Background = brush;
     }
+
+    private void DrawWallpaperProperties(WorkshopEntry.Properties[]? props)
+    {
+        cont_SidePanel_CustomProperties.Children.Clear();
+
+        if (props == null)
+            return;
+
+        IWallpaperProperty? ui = null;
+
+        foreach (WorkshopEntry.Properties prop in props)
+        {
+            ui = GetWallpaperPropertyUI(prop.type ?? WorkshopEntry.PropertyType.INVALID);
+
+            if (ui == null)
+                continue;
+
+            ui.Draw(prop);
+            cont_SidePanel_CustomProperties.Children.Add((ui as UserControl)!);
+        }
+    }
+
+    private IWallpaperProperty? GetWallpaperPropertyUI(WorkshopEntry.PropertyType type)
+    {
+        switch (type)
+        {
+            case WorkshopEntry.PropertyType.colour: return new HomePage_WallpaperProperties_Colour();
+                //case WorkshopEntry.PropertyType.boolean: return new HomePage_WallpaperProperties_Bool();
+                //case WorkshopEntry.PropertyType.combo: return new HomePage_WallpaperProperties_Combo();
+                //case WorkshopEntry.PropertyType.text_input: return new HomePage_WallpaperProperties_TextInput();
+                //case WorkshopEntry.PropertyType.scene_texture: return new HomePage_WallpaperProperties_SceneTexture();
+        }
+
+        return null;
+    }
+
+
+
 
     private void SetWallpaper()
     {
