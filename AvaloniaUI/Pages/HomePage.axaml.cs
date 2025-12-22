@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -19,13 +21,26 @@ public partial class HomePage : UserControl
     public const int ENTRIES_PER_PAGE = 50;
 
     private int loadedPages = 0;
+    private string? cachedNameFilter;
+
+    private Dictionary<long, HomePage_Wallpaper> cachedWallpaperUI = new Dictionary<long, HomePage_Wallpaper>();
 
     private long? currentlySelectedWallpaper
     {
         set
         {
+            if (m_currentlySelectedWallpaper.HasValue && cachedWallpaperUI.TryGetValue(m_currentlySelectedWallpaper.Value, out HomePage_Wallpaper? ui))
+            {
+                ui.ToggleSelection(false);
+            }
+
             m_currentlySelectedWallpaper = value;
             grid_SidePanel.IsVisible = m_currentlySelectedWallpaper.HasValue;
+
+            if (m_currentlySelectedWallpaper.HasValue && cachedWallpaperUI.TryGetValue(m_currentlySelectedWallpaper.Value, out ui))
+            {
+                ui.ToggleSelection(true);
+            }
         }
         get => m_currentlySelectedWallpaper;
     }
@@ -36,10 +51,11 @@ public partial class HomePage : UserControl
         InitializeComponent();
         SetupBasicOptions();
 
+        inp_NameSearch.KeyUp += (_, __) => UpdateFilter();
+
         if (!Design.IsDesignMode)
         {
-            WorkshopManager.RefreshLocalEntries();
-            DrawWallpapers();
+            DrawWallpapers(false);
         }
     }
 
@@ -64,18 +80,35 @@ public partial class HomePage : UserControl
         btn_LoadMore.RegisterClick(LoadExtraEntries);
     }
 
-    private async void DrawWallpapers()
+    private async void DrawWallpapers(bool additive)
     {
-        WorkshopEntry[] wallpapers = WorkshopManager.GetCachedWallpaperEntries(loadedPages * ENTRIES_PER_PAGE, ENTRIES_PER_PAGE);
+        WorkshopEntry[] wallpapers = WorkshopManager.GetCachedWallpaperEntries(inp_NameSearch.Text, null, loadedPages * ENTRIES_PER_PAGE, ENTRIES_PER_PAGE);
 
-        foreach (WorkshopEntry wallpaper in wallpapers)
+        if (!additive)
+            grid_Content_Container.Children.Clear();
+
+        for (int i = 0; i < wallpapers.Length; i++)
         {
+            HomePage_Wallpaper ui = GetWallpaperUI(wallpapers[i]);
+
+            ui.StartDraw(wallpapers[i], this);
+            grid_Content_Container.Children.Add(ui);
+        }
+
+        int maxPages = (int)Math.Ceiling(WorkshopManager.GetWallpaperCount() / (float)ENTRIES_PER_PAGE);
+        btn_LoadMore.IsVisible = loadedPages < maxPages - 1;
+
+        HomePage_Wallpaper GetWallpaperUI(WorkshopEntry entry)
+        {
+            if (cachedWallpaperUI.TryGetValue(entry.id, out HomePage_Wallpaper? cached))
+                return cached!;
+
             HomePage_Wallpaper wallpaperEntry = new HomePage_Wallpaper();
-            wallpaperEntry.StartDraw(wallpaper, this);
             wallpaperEntry.Height = ENTRY_SIZE;
             wallpaperEntry.Width = ENTRY_SIZE;
 
-            grid_Content_Container.Children.Add(wallpaperEntry);
+            cachedWallpaperUI.Add(entry.id, wallpaperEntry);
+            return wallpaperEntry;
         }
     }
 
@@ -105,7 +138,7 @@ public partial class HomePage : UserControl
         if (props == null)
             return;
 
-        IWallpaperProperty? ui = null;
+        IWallpaperProperty? ui;
 
         foreach (WorkshopEntry.Properties prop in props)
         {
@@ -133,10 +166,7 @@ public partial class HomePage : UserControl
         return null;
     }
 
-
-
-
-    private void SetWallpaper()
+    private async Task SetWallpaper()
     {
         if (currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
             return;
@@ -146,19 +176,25 @@ public partial class HomePage : UserControl
         options.clampOptions = (WallpaperSetter.ClampOptions)inp_SidePanel_Clamp.SelectedIndex;
 
         options.screens = WallpaperSetter.WorkOutScreenOffsets((float)inp_SidePanel_OffsetX.Value, (float)inp_SidePanel_OffsetY.Value);
-        WallpaperSetter.SetWallpaper(entry!.path, options);
+        await WallpaperSetter.SetWallpaper(entry!.path, options);
     }
 
     private void LoadExtraEntries()
     {
         loadedPages++;
-        DrawWallpapers();
+        DrawWallpapers(true);
+    }
 
-        int maxPages = (int)Math.Ceiling(WorkshopManager.GetWallpaperCount() / (float)ENTRIES_PER_PAGE);
-
-        if (loadedPages >= maxPages - 1)
+    private void UpdateFilter()
+    {
+        if (cachedNameFilter == inp_NameSearch.Text)
         {
-            btn_LoadMore.IsVisible = false;
+            return;
         }
+
+        cachedNameFilter = inp_NameSearch.Text;
+
+        loadedPages = 0;
+        DrawWallpapers(false);
     }
 }

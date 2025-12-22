@@ -9,8 +9,18 @@
       <ColumnDefinition Width="Auto"/>
     </Grid.ColumnDefinitions>
 
-    <Grid Grid.Column="0" x:Name="grid_Content">
-      <ScrollViewer Margin="20">
+    <Grid Grid.Column="0" x:Name="grid_Content" RowDefinitions="Auto, *">
+      <StackPanel Margin="20" Spacing="5">
+        <TextBox VerticalAlignment="Top" x:Name="inp_NameSearch"/>
+        <StackPanel Orientation="Horizontal" Spacing="5" IsVisible="False">
+          <TextBox Width="200"/>
+          <Common:Common_Button Label="Tag1"/>
+          <Common:Common_Button Label="Tag2"/>
+          <Common:Common_Button Label="Tag3"/>
+        </StackPanel>
+      </StackPanel>
+
+      <ScrollViewer Grid.Row="1" Margin="20">
         <StackPanel Spacing="20">
           <WrapPanel x:Name="grid_Content_Container" HorizontalAlignment="Center" ItemSpacing="15" LineSpacing="15"/>
           <Common:Common_Button Label="Load More" Height="40" Width="200" x:Name="btn_LoadMore"/>

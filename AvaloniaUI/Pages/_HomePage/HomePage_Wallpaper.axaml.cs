@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using AvaloniaUI.Utils;
 using Logic.Data;
 
@@ -9,6 +10,10 @@ namespace AvaloniaUI.Pages._HomePage;
 
 public partial class HomePage_Wallpaper : UserControl
 {
+    private static Thickness? unselectedThickness;
+    private static Thickness? selectedThickness;
+    private static ImmutableSolidColorBrush? selectedBrush;
+
     private long? representingId;
     private HomePage? master;
 
@@ -40,5 +45,15 @@ public partial class HomePage_Wallpaper : UserControl
             return;
 
         master.SelectWallpaper(representingId.Value);
+    }
+
+    public void ToggleSelection(bool to)
+    {
+        unselectedThickness ??= new Thickness(0);
+        selectedThickness ??= new Thickness(2);
+        selectedBrush ??= new ImmutableSolidColorBrush(Color.FromRgb(0, 255, 0));
+
+        border.BorderThickness = to ? selectedThickness.Value : unselectedThickness.Value;
+        border.BorderBrush = to ? selectedBrush : null;
     }
 }

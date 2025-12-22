@@ -11,8 +11,8 @@ public partial class App : Application
 {
     public override void Initialize()
     {
-        AvaloniaXamlLoader.Load(this);
         SetupDependencies();
+        AvaloniaXamlLoader.Load(this);
     }
 
     private async void SetupDependencies()
@@ -21,6 +21,7 @@ public partial class App : Application
         {
             await ConfigManager.Init();
             await WorkshopManager.Init(ImageFetcher.HandleBrushCreation);
+            await WorkshopManager.RefreshLocalEntries();
         }
 
     }
