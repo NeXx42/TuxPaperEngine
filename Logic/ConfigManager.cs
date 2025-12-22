@@ -21,6 +21,7 @@ public static class ConfigManager
         await Database_Manager.Init(dbPath);
 
         await LoadWorkshopLocations();
+        await WallpaperSetter.TryFindExecutableLocation();
     }
 
     private static async Task LoadWorkshopLocations()

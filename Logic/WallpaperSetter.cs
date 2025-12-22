@@ -1,11 +1,33 @@
 using System.Diagnostics;
 using System.IO.IsolatedStorage;
+using CSharpSqliteORM;
 using Logic.db;
 
 namespace Logic;
 
 public static class WallpaperSetter
 {
+    private static string? cachedExecutableLocation;
+
+    public static async Task TryFindExecutableLocation()
+    {
+        dbo_Config? overridePath = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.ExecutableLocation);
+
+        if (overridePath != null)
+        {
+            cachedExecutableLocation = overridePath.value;
+            return;
+        }
+
+        const string exeDir = "engine/linux-wallpaperengine";
+        string localPath = Path.Combine(AppContext.BaseDirectory, exeDir);
+
+        if (File.Exists(localPath))
+        {
+            cachedExecutableLocation = localPath;
+        }
+    }
+
     public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(ConfigManager.Screen[] screens)
     {
         screens = screens.OrderBy(x => x.priority).ToArray();
@@ -25,19 +47,17 @@ public static class WallpaperSetter
         return res;
     }
 
-    public static async void SetWallpaper(string path, WallpaperOptions options)
+    public static void SetWallpaper(string path, WallpaperOptions options)
     {
-        dbo_Config? val = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.ExecutableLocation);
-
-        if (val == null || string.IsNullOrEmpty(val.value))
+        if (string.IsNullOrEmpty(cachedExecutableLocation))
         {
             throw new Exception("No executable linked");
         }
 
-        KillExistingRuns(val.value);
+        KillExistingRuns(cachedExecutableLocation);
 
         ProcessStartInfo info = options.CreateArgList();
-        info.FileName = val.value;
+        info.FileName = cachedExecutableLocation;
         info.ArgumentList.Add(path);
 
         info.UseShellExecute = false;

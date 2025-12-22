@@ -5,6 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpSqliteORM\CSharpSqliteORM.csproj" />
+    <ProjectReference Include="..\Database\CSharpSqliteORM.csproj" />
   </ItemGroup>
 </Project>
