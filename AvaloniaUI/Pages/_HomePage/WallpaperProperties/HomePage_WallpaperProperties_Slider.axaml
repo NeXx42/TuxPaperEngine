@@ -5,6 +5,6 @@
   <Grid ColumnDefinitions="100, *, 50" ColumnSpacing="15" Height="50">
     <Label x:Name="lbl" Content="Offset X" VerticalAlignment="Center" FontSize="12"/>
     <Slider x:Name="inp" Grid.Column="1"/>
-    <TextBox x:Name="amount" Grid.Column="2" Height="20"/>
+    <Label x:Name="amount" Grid.Column="2" Height="20"/>
   </Grid>
 </UserControl>

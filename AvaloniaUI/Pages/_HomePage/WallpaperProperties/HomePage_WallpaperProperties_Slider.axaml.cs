@@ -72,7 +72,7 @@ public partial class HomePage_WallpaperProperties_Slider : UserControl, IWallpap
     private void OnChangeValue()
     {
         isDirty = true;
-        amount.Text = inp.Value.ToString();
+        amount.Content = inp.Value.ToString("0.000");
     }
 
     public string? CreateArgument()
