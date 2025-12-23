@@ -77,6 +77,14 @@ public partial class HomePage : UserControl
         inp_SidePanel_OffsetX.Minimum = -1;
         inp_SidePanel_OffsetX.Maximum = 1;
 
+        inp_SidePanel_Colours_Contrast.Maximum = 5;
+        inp_SidePanel_Colours_Contrast.Value = 1;
+        inp_SidePanel_Colours_Contrast.Minimum = -4;
+
+        inp_SidePanel_Colours_Saturation.Maximum = 5;
+        inp_SidePanel_Colours_Saturation.Value = 1;
+        inp_SidePanel_Colours_Saturation.Minimum = -4;
+
         btn_LoadMore.RegisterClick(LoadExtraEntries);
     }
 
@@ -174,6 +182,9 @@ public partial class HomePage : UserControl
         WallpaperSetter.WallpaperOptions options = new WallpaperSetter.WallpaperOptions();
         options.scalingOption = inp_SidePanel_Scaling.SelectedIndex - 1 >= 0 ? (WallpaperSetter.ScalingOptions)(inp_SidePanel_Scaling.SelectedIndex - 1) : null;
         options.clampOptions = (WallpaperSetter.ClampOptions)inp_SidePanel_Clamp.SelectedIndex;
+
+        options.contrast = inp_SidePanel_Colours_Contrast.Value;
+        options.saturation = inp_SidePanel_Colours_Saturation.Value;
 
         options.screens = WallpaperSetter.WorkOutScreenOffsets((float)inp_SidePanel_OffsetX.Value, (float)inp_SidePanel_OffsetY.Value);
         await WallpaperSetter.SetWallpaper(entry!.path, options);

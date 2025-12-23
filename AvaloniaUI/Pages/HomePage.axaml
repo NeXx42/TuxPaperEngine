@@ -68,12 +68,28 @@
             </StackPanel>
           </Border>
 
+          <Label Content="Colour Settings" FontSize="26"/>
+          <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
+            <StackPanel>
+
+              <Grid ColumnDefinitions="100, *">
+                <Label Content="Contrast"/>
+                <Slider x:Name="inp_SidePanel_Colours_Contrast" Grid.Column="1"/>
+              </Grid>
+
+              <Grid ColumnDefinitions="100, *">
+                <Label Content="Saturation"/>
+                <Slider x:Name="inp_SidePanel_Colours_Saturation" Grid.Column="1"/>
+              </Grid>
+
+            </StackPanel>
+          </Border>
+
 
           <Label Content="Custom Properties" FontSize="26"/>
 
           <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
             <StackPanel Margin="20" Spacing="5" x:Name="cont_SidePanel_CustomProperties">
-
             </StackPanel>
           </Border>
 

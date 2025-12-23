@@ -147,6 +147,9 @@ public static class WallpaperSetter
         public ScalingOptions? scalingOption;
         public ScreenSettings[] screens;
 
+        public double saturation;
+        public double contrast;
+
         public struct ScreenSettings
         {
             public required string screenName;
@@ -188,6 +191,13 @@ public static class WallpaperSetter
                     info.ArgumentList.Add(screen.offsetY.ToString()!);
                 }
             }
+
+
+            info.ArgumentList.Add("--contrast");
+            info.ArgumentList.Add(contrast.ToString());
+
+            info.ArgumentList.Add("--saturation");
+            info.ArgumentList.Add(saturation.ToString());
 
             info.ArgumentList.Add("--bg");
             return info;
