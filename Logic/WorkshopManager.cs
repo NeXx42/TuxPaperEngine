@@ -6,30 +6,32 @@ namespace Logic;
 public static class WorkshopManager
 {
     private static int? filterEntriesCount;
-    private static Dictionary<long, WorkshopEntry> cachedEntries = new Dictionary<long, WorkshopEntry>();
+    private static ConcurrentDictionary<long, WorkshopEntry> cachedEntries = new ConcurrentDictionary<long, WorkshopEntry>();
 
     public static int GetWallpaperCount() => filterEntriesCount ?? 0;
 
     public static async Task RefreshLocalEntries()
     {
+        List<DirectoryInfo> folders = new List<DirectoryInfo>();
+
         foreach (string dir in ConfigManager.localWorkshopLocations!)
         {
             string[] entries = Directory.GetDirectories(dir);
             foreach (string wallpaper in entries)
             {
-                InvestigateWallpaper(wallpaper);
+                folders.Add(new DirectoryInfo(wallpaper));
             }
         }
 
-        await Parallel.ForEachAsync(cachedEntries, async (KeyValuePair<long, WorkshopEntry> res, CancellationToken token) => await res.Value.DecodeBasic());
+        folders = folders.OrderByDescending(x => x.CreationTimeUtc).ToList();
 
-        void InvestigateWallpaper(string path)
+        await Parallel.ForEachAsync(folders, async (DirectoryInfo dir, CancellationToken token) =>
         {
-            if (!long.TryParse(Path.GetFileName(path), out long wallpaperId) || cachedEntries.ContainsKey(wallpaperId))
+            if (!long.TryParse(Path.GetFileName(dir.FullName), out long wallpaperId) || cachedEntries.ContainsKey(wallpaperId))
                 return;
 
-            cachedEntries.Add(wallpaperId, new WorkshopEntry(wallpaperId, path));
-        }
+            cachedEntries.TryAdd(wallpaperId, new WorkshopEntry(wallpaperId, dir.FullName, dir.CreationTimeUtc));
+        });
     }
 
     public static WorkshopEntry[] GetCachedWallpaperEntries(string? nameSearch, HashSet<string>? tags, int skip, int take)

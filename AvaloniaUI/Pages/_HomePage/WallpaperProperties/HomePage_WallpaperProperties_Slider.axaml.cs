@@ -19,6 +19,10 @@ public partial class HomePage_WallpaperProperties_Slider : UserControl, IWallpap
     public HomePage_WallpaperProperties_Slider()
     {
         InitializeComponent();
+
+        this.Height = HomePage.PROPERTY_DEFAULT_HEIGHT;
+        this.lbl.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
+        this.amount.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
     }
 
     public IWallpaperProperty Init(WorkshopEntry.Properties prop)

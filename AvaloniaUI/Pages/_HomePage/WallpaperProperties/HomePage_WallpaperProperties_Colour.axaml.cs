@@ -23,9 +23,16 @@ public partial class HomePage_WallpaperProperties_Colour : UserControl, IWallpap
     public string? StringColour => currentColour != null ? GetColourAsString(currentColour.Value) : string.Empty;
     public string? GetColourAsString(Color c) => $"{c.R / 255f},{c.G / 255f},{c.B / 255f}";
 
+    private static ImmutableSolidColorBrush foreground_White;
+    private static ImmutableSolidColorBrush foreground_Black;
+
     public HomePage_WallpaperProperties_Colour()
     {
         InitializeComponent();
+
+        this.Height = HomePage.PROPERTY_DEFAULT_HEIGHT;
+        this.lbl.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
+        this.inp.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
     }
 
     public IWallpaperProperty Init(WorkshopEntry.Properties prop)
@@ -109,6 +116,7 @@ public partial class HomePage_WallpaperProperties_Colour : UserControl, IWallpap
         {
             currentColour = c;
             inp.Background = new ImmutableSolidColorBrush(currentColour.Value);
+            inp.Foreground = GetHighContrastForegroundColour(currentColour.Value);
 
             isDirty = true;
         }
@@ -120,5 +128,14 @@ public partial class HomePage_WallpaperProperties_Colour : UserControl, IWallpap
             return null;
 
         return $"{key!}={GetColourAsString(currentColour.Value)}";
+    }
+
+    private static ImmutableSolidColorBrush GetHighContrastForegroundColour(Color of)
+    {
+        foreground_White ??= new ImmutableSolidColorBrush(Color.FromRgb(255, 255, 255));
+        foreground_Black ??= new ImmutableSolidColorBrush(Color.FromRgb(0, 0, 0));
+
+        double luminance = (0.299 * of.R) + (0.587 * of.G) + (0.114 * of.B);
+        return luminance > 186 ? foreground_Black : foreground_White;
     }
 }

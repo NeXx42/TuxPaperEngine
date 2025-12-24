@@ -15,6 +15,9 @@ public partial class HomePage_WallpaperProperties_SceneTexture : UserControl, IW
     public HomePage_WallpaperProperties_SceneTexture()
     {
         InitializeComponent();
+
+        this.Height = HomePage.PROPERTY_DEFAULT_HEIGHT;
+        this.lbl.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
     }
 
     public string? CreateArgument()

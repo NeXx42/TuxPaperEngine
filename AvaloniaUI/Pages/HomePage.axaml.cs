@@ -19,6 +19,9 @@ namespace AvaloniaUI.Pages;
 
 public partial class HomePage : UserControl
 {
+    public const int PROPERTY_DEFAULT_HEIGHT = 30;
+    public const int PROPERTY_DEFAULT_FONT_SIZE = 10;
+
     public const string DEFAULT_SCALING_NAME = "Default";
 
     public const int ENTRY_SIZE = 150;
@@ -75,27 +78,29 @@ public partial class HomePage : UserControl
         inp_NameSearch.KeyUp += (_, __) => UpdateFilter();
 
     }
-
-    public async void LoadPage()
-    {
-        if (isSetup)
-            return;
-
-        isSetup = true;
-
-        currentlySelectedWallpaper = null;
-
-        await MainWindow.AsyncLoad(WorkshopManager.RefreshLocalEntries);
-        DrawWallpapers(false);
-    }
-
     private void SetupBasicOptions()
     {
         btn_SidePanel_Set.RegisterClick(SetWallpaper);
         btn_SidePanel_Browse.RegisterClick(BrowseToFolder);
 
         btn_LoadMore.RegisterClick(LoadExtraEntries);
+        btn_Refresh.RegisterClick(() => LoadPage(true));
     }
+
+    public async void LoadPage(bool force = false)
+    {
+        if (isSetup && !force)
+            return;
+
+        isSetup = true;
+
+        loadedPages = 0;
+        currentlySelectedWallpaper = null;
+
+        await MainWindow.AsyncLoad(WorkshopManager.RefreshLocalEntries);
+        DrawWallpapers(false);
+    }
+
 
     private async void DrawWallpapers(bool additive)
     {
@@ -196,6 +201,7 @@ public partial class HomePage : UserControl
             return;
         }
 
+        cont_SidePanel_CustomPropertiesGroup.IsVisible = true;
         cont_SidePanel_CustomProperties.Children.Clear();
 
         if (props == null)

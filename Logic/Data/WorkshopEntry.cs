@@ -6,6 +6,8 @@ public class WorkshopEntry : IWorkshopEntry
 {
     public long id;
     public string path;
+    public DateTime? creationDate;
+
     public string? iconPath;
     public string? title;
     public string[]? tags;
@@ -15,12 +17,13 @@ public class WorkshopEntry : IWorkshopEntry
     private int decodeStatus;
 
     public long getId => id;
-    public string? getIconPath => Path.Combine(path, iconPath);
+    public string? getIconPath => string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, iconPath!);
 
-    public WorkshopEntry(long id, string path)
+    public WorkshopEntry(long id, string path, DateTime? creationDate)
     {
         this.id = id;
         this.path = path;
+        this.creationDate = creationDate;
 
         decodeStatus = 0;
     }
@@ -109,16 +112,16 @@ public class WorkshopEntry : IWorkshopEntry
             {
                 string? typeName = el.GetString();
 
-                switch (typeName)
+                switch (typeName?.ToLower())
                 {
                     case "slider":
                         type = PropertyType.slider;
                         value = parent.Value.GetProperty("value").GetDouble().ToString();
 
-                        max = parent.Value.GetProperty("max").GetDouble();
-                        min = parent.Value.GetProperty("min").GetDouble();
-                        precision = parent.Value.GetProperty("precision").GetDouble();
-                        step = parent.Value.GetProperty("step").GetDouble();
+                        parent.Value.TryGetDoubleProperty("max", out max);
+                        parent.Value.TryGetDoubleProperty("min", out min);
+                        parent.Value.TryGetDoubleProperty("precision", out precision);
+                        parent.Value.TryGetDoubleProperty("step", out step);
                         break;
 
                     case "color":

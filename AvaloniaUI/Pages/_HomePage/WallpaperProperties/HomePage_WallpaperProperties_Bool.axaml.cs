@@ -17,6 +17,10 @@ public partial class HomePage_WallpaperProperties_Bool : UserControl, IWallpaper
     public HomePage_WallpaperProperties_Bool()
     {
         InitializeComponent();
+
+        this.Height = HomePage.PROPERTY_DEFAULT_HEIGHT;
+        this.lbl.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
+        this.inp.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
     }
 
     public IWallpaperProperty Init(WorkshopEntry.Properties prop)
