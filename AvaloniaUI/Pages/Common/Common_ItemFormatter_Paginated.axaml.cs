@@ -132,12 +132,16 @@ public partial class Common_ItemFormatter_Paginated : UserControl, IItemFormatte
             return;
 
         currentlySelectedWallpaper = id;
+
+        viewer!.OpenSidePanel();
+        viewer.DrawTags(null);
+
         await sidePanelHandler!(id);
     }
 
     private async Task ChangePageNumber(int delta)
     {
-        currentPage = Math.Max(0, currentPage + delta);
+        currentPage = Math.Max(1, currentPage + delta);
         currentlySelectedWallpaper = null;
 
         //btn_Page_1.IsVisible = currentPage > 2;

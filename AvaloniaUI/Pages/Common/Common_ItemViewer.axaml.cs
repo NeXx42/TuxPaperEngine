@@ -50,13 +50,14 @@ public partial class Common_ItemViewer : UserControl
     public void OpenSidePanel()
     {
         scroll_SidePanel.ScrollToHome();
-        cont_SidePanel_Tags.Children.Clear();
         img_SidePanel_Icon.Background = null;
         lbl_SidePanel_Title.Content = "";
     }
 
     public void DrawTags(string[]? tags)
     {
+        cont_SidePanel_Tags.Children.Clear();
+
         if (tags == null)
             return;
 

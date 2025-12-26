@@ -14,7 +14,8 @@ public static class SteamWorkshopManager
         {
             using (HttpClient client = new HttpClient())
             {
-                string html = await client.GetStringAsync(BuildURLFromFilter(filter));
+                string url = BuildURLFromFilter(filter);
+                string html = await client.GetStringAsync(url);
 
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(html);
@@ -23,25 +24,22 @@ public static class SteamWorkshopManager
 
                 foreach (var item in entries)
                 {
-                    try
-                    {
-                        string id = item.SelectSingleNode(".//a[@class='ugc']").GetDataAttribute("publishedfileid").Value;
-                        string name = item.SelectSingleNode(".//div[contains(@class, 'workshopItemTitle')]")?.InnerHtml ?? "";
-                        string imgUrl = item.SelectSingleNode(".//img[contains(@class, 'workshopItemPreviewImage')]")?.GetAttributeValue("src", "") ?? "";
+                    string id = item.SelectSingleNode(".//a[contains(@class, 'ugc')]")?.GetDataAttribute("publishedfileid")?.Value ?? "";
+                    string name = item.SelectSingleNode(".//div[contains(@class, 'workshopItemTitle')]")?.InnerHtml ?? "";
+                    string imgUrl = item.SelectSingleNode(".//img[contains(@class, 'workshopItemPreviewImage')]")?.GetAttributeValue("src", "") ?? "";
 
-                        if (long.TryParse(id, out long _id))
+                    if (long.TryParse(id, out long _id))
+                    {
+                        items.Add(new SteamWorkshopEntry()
                         {
-                            items.Add(new SteamWorkshopEntry()
-                            {
-                                id = _id,
-                                name = name,
-                                imgUrl = imgUrl,
-                            });
-                        }
+                            id = _id,
+                            name = name,
+                            imgUrl = imgUrl,
+                        });
                     }
-                    catch
+                    else
                     {
-
+                        Console.WriteLine("Invalid file id?");
                     }
                 }
 
