@@ -1,5 +1,5 @@
 OUTPUT_DIR = ./_Output/
-PROGRAM_NAME = gui
+PROGRAM_NAME = TuxPaperEngine
 
 publish:
 
