@@ -32,5 +32,5 @@ make publish
 ```
 3. Run
 ```sh
-./_Output/AvaloniaUI/GameLibrary.AvaloniaUI
+./_Output/TuxPaperEngine/TuxPaperEngine
 ```
