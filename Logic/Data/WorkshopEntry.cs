@@ -157,12 +157,12 @@ public class WorkshopEntry : IWorkshopEntry
                 {
                     if (parent.Value.TryGetProperty("value", out el))
                     {
-                        value = el.GetString();
+                        value = el.ToString();
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    Console.WriteLine($"Unhandled param type for - {type}");
+                    Console.WriteLine($"Unhandled param type for - {type}\n{e.Message}\n{e.StackTrace}");
                 }
             }
             else

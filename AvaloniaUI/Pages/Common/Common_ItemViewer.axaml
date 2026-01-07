@@ -11,17 +11,9 @@
     </Grid.ColumnDefinitions>
 
     <Grid Grid.Column="0" x:Name="grid_Content" RowDefinitions="Auto, *">
-      <Grid Margin="10">
-        <Border Background="{DynamicResource bg_Panel}" CornerRadius="5" Height="44">
-          <Grid Margin="10">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="15">
-              <Label Content="Search" VerticalAlignment="Center" Foreground="#fff"/>
-              <TextBox x:Name="inp_NameSearch" Height="30" MinHeight="0" VerticalAlignment="Center" Width="250" HorizontalAlignment="Left"/>
-            </StackPanel>
-
-            <Common:Common_Button Label="Filters" HorizontalAlignment="Right" Width="150"/>
-          </Grid>
-        </Border>
+      <Grid Margin="10" ColumnDefinitions="* 5 Auto">
+        <TextBox x:Name="inp_NameSearch" Height="30" MinHeight="0" VerticalAlignment="Center" Watermark="Search" CornerRadius="2" Background="#2C2C2C" BorderBrush="#FF444444" BorderThickness="1"/>
+        <Common:Common_Button Label="Filters" Width="150" Grid.Column="2"/>
       </Grid>
 
       <ScrollViewer Grid.Row="1">
