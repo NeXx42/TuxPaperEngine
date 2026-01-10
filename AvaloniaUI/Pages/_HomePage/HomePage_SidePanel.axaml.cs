@@ -33,8 +33,8 @@ public partial class HomePage_SidePanel : UserControl
             prop_OffsetY.Init(nameof(prop_OffsetY), "Offset Y", -1, 1, 0),
 
             prop_BGColour.Init(nameof(prop_BGColour), "Border Colour", Color.FromRgb(0, 0, 0)),
-            prop_Contrast.Init(nameof(prop_Contrast), "Contrast", -4, 5, 1),
-            prop_Saturation.Init(nameof(prop_Saturation), "Saturation", -4, 5, 1),
+            prop_Contrast.Init(nameof(prop_Contrast), "Contrast", 0, 60, 30),
+            prop_Saturation.Init(nameof(prop_Saturation), "Saturation", 0, 60, 30),
         ];
 
         customProps = new List<IWallpaperProperty>();
@@ -126,11 +126,11 @@ public partial class HomePage_SidePanel : UserControl
         options.scalingOption = prop_Scaling.SelectedIndex - 1 >= 0 ? (WallpaperSetter.ScalingOptions)(prop_Scaling.SelectedIndex - 1) : null;
         options.clampOptions = (WallpaperSetter.ClampOptions)prop_Clamp.SelectedIndex;
 
-        options.contrast = prop_Contrast.Value;
-        options.saturation = prop_Saturation.Value;
+        options.contrast = 0.5f + (prop_Contrast.Value / 60) * 1.5f;
+        options.saturation = prop_Saturation.Value / 60f * 1.4f;
         options.borderColour = prop_BGColour.StringColour;
 
-        options.screens = WallpaperSetter.WorkOutScreenOffsets((float)prop_OffsetX.Value, (float)prop_OffsetY.Value);
+        options.screens = WallpaperSetter.WorkOutScreenOffsets(-(float)prop_OffsetX.Value, -(float)prop_OffsetY.Value);
         options.customProperties = customProps?.Select(x => x.CreateArgument()).Where(x => !string.IsNullOrEmpty(x)).Select(x => x!).ToArray();
 
         return options;

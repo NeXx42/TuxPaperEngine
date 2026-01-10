@@ -30,17 +30,34 @@ public partial class HomePage_WallpaperProperties_Slider : UserControl, IWallpap
         return Init(prop.propertyName!, prop.text!, (float)prop.min!, (float)prop.max!, float.Parse(prop.value!));
     }
 
+    public IWallpaperProperty Init(string name, string label, int min, int max, int val)
+    {
+        defaultValue = val;
+
+        inp.Minimum = min;
+        inp.Maximum = max;
+        inp.Value = val;
+
+        return DrawBasic(name, label);
+    }
+
     public IWallpaperProperty Init(string name, string label, float min, float max, float val)
+    {
+        defaultValue = val;
+
+        inp.Minimum = min;
+        inp.Maximum = max;
+        inp.Value = val;
+
+        return DrawBasic(name, label);
+    }
+
+    private IWallpaperProperty DrawBasic(string name, string label)
     {
         key = name;
         lbl.Content = label;
 
         inp.ValueChanged += (_, __) => OnChangeValue();
-
-        defaultValue = val;
-        inp.Minimum = min;
-        inp.Maximum = max;
-        inp.Value = val;
 
         isDirty = false;
         return this;

@@ -7,7 +7,7 @@
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="Auto"/>
+      <ColumnDefinition Width="350"/>
     </Grid.ColumnDefinitions>
 
     <Grid Grid.Column="0" x:Name="grid_Content" RowDefinitions="Auto, *">
@@ -24,9 +24,16 @@
     </Grid>
 
 
+    <!-- Filter -->
+
+    <Grid x:Name="grid_Filter" Grid.Column="1">
+      <StackPanel>
+      </StackPanel>
+    </Grid>
+
     <!-- SIDE BAR -->
 
-    <Grid x:Name="grid_SidePanel" Background="{DynamicResource bg_Panel}" Grid.Column="1" Width="350" IsVisible="True">
+    <Grid x:Name="grid_SidePanel" Background="{DynamicResource bg_Panel}" Grid.Column="1" IsVisible="True">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="10"/>
@@ -51,8 +58,8 @@
       </ScrollViewer>
 
 
-      <Border Background="{DynamicResource bg_Panel_Light}" Grid.Row="2" VerticalAlignment="Bottom" Height="50" CornerRadius="5">
-        <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" x:Name="cont_sidePanel_Actions">
+      <Border Background="{DynamicResource bg_Panel_Light}" Grid.Row="2" VerticalAlignment="Bottom" Height="50" CornerRadius="5 5 0 0" Margin="10 0">
+        <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right" x:Name="cont_sidePanel_Actions" VerticalAlignment="Center" Height="30" Margin="5">
 
         </StackPanel>
       </Border>
