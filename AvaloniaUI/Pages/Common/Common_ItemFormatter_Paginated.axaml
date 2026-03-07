@@ -3,24 +3,19 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.Common.Common_ItemFormatter_Paginated"
   xmlns:Common="clr-namespace:AvaloniaUI.Common">
-  <Grid Margin="10" RowDefinitions="*, Auto">
+  <Grid RowDefinitions="*, Auto">
 
-    <WrapPanel x:Name="grid_Content_Container" HorizontalAlignment="Center" ItemSpacing="5" LineSpacing="5" />
+    <WrapPanel x:Name="grid_Content_Container" HorizontalAlignment="Center" ItemSpacing="15" LineSpacing="15" Margin="10"/>
     <Label x:Name="lbl_Content_NetworkResponse"/>
 
-    <Grid Grid.Row="1">
-      <Border Background="Red" HorizontalAlignment="Left" CornerRadius="5">
-        <StackPanel Orientation="Horizontal" Spacing="5" Margin="5" Height="30">
-          <Common:Common_Button Label="1" Width="30" x:Name="btn_Page_1"/>
-          <Common:Common_Button Label="2" Width="30" x:Name="btn_Page_2"/>
-
-          <TextBox Text="3" HorizontalContentAlignment="Center" x:Name="inp_CurPage"/>
-
-          <Common:Common_Button Label="4" Width="30" x:Name="btn_Page_3"/>
-          <Common:Common_Button Label="5" Width="30" x:Name="btn_Page_4"/>
-
-        </StackPanel>
-      </Border>
-    </Grid>
+    <Border Grid.Row="1" BorderBrush="rgb(34, 34, 40)" BorderThickness="0 1 0 0">
+      <StackPanel Orientation="Horizontal" Spacing="5" Margin="5" Height="30" HorizontalAlignment="Center">
+        <Common:Common_Button Label="1" Width="30" x:Name="btn_Page_1" Classes="Positive2"/>
+        <Common:Common_Button Label="2" Width="30" x:Name="btn_Page_2"/>
+        <Common:Common_Button Label="4" Width="30" x:Name="btn_Page_3"/>
+        <Common:Common_Button Label="5" Width="30" x:Name="btn_Page_4"/>
+        <Common:Common_Button Label="5" Width="30" x:Name="btn_Page_5"/>
+      </StackPanel>
+    </Border>
   </Grid>
 </UserControl>

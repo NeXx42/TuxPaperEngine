@@ -12,18 +12,21 @@ namespace AvaloniaUI.Pages.Common;
 
 public partial class Common_ItemViewer : UserControl
 {
+    protected Common_Sidebar? sidebar;
+
     public Common_ItemViewer()
     {
         InitializeComponent();
     }
 
-    public void Setup(UserControl formatter, UserControl? sidePanel)
+    public void Setup(UserControl formatter, Common_Sidebar? sidePanel)
     {
+        sidebar = sidePanel;
         cont_Formatter.Child = formatter;
 
         if (sidePanel != null)
         {
-            cont_SidePanel.Children.Add(sidePanel);
+            //cont_SidePanel.Children.Add(sidePanel);
         }
     }
 
@@ -33,7 +36,7 @@ public partial class Common_ItemViewer : UserControl
         btn.Label = name;
         btn.RegisterClick(callback);
 
-        cont_sidePanel_Actions.Children.Add(btn);
+        //cont_sidePanel_Actions.Children.Add(btn);
     }
 
     public void RegisterAction(string name, Func<Task> callback)
@@ -42,31 +45,6 @@ public partial class Common_ItemViewer : UserControl
         btn.Label = name;
         btn.RegisterClick(callback);
 
-        cont_sidePanel_Actions.Children.Add(btn);
-    }
-
-
-
-    public void OpenSidePanel()
-    {
-        scroll_SidePanel.ScrollToHome();
-        img_SidePanel_Icon.Background = null;
-        lbl_SidePanel_Title.Content = "";
-    }
-
-    public void DrawTags(string[]? tags)
-    {
-        cont_SidePanel_Tags.Children.Clear();
-
-        if (tags == null)
-            return;
-
-        foreach (string tag in tags)
-        {
-            Common_Tag tagUI = new Common_Tag();
-            tagUI.tagName.Content = tag;
-
-            cont_SidePanel_Tags.Children.Add(tagUI);
-        }
+        //cont_sidePanel_Actions.Children.Add(btn);
     }
 }

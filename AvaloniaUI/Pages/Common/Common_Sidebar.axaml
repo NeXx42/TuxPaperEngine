@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.Common.Common_Sidebar"
+  xmlns:Common="clr-namespace:AvaloniaUI.Common">
+  <Border Background="#050506" BorderThickness="1 0 0 0" Width="300" BorderBrush="rgb(34, 34, 40)">
+    <Grid>
+      <Grid x:Name="cont_NoContent">
+        <Label VerticalAlignment="Center" HorizontalAlignment="Center">Select a wallpaper</Label>
+      </Grid>
+
+      <Grid x:Name="cont_Content" IsVisible="True">
+        <Grid RowDefinitions="Auto *">
+          <StackPanel>
+            <Grid Height="300" VerticalAlignment="Top" Background="Red">
+              <Border x:Name="img_SidePanel_Icon" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+
+              <Grid Background="Green" VerticalAlignment="Bottom" Height="80">
+                <Grid.Background>
+                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#00000000" Offset="0.1"/>
+                    <GradientStop Color="#000000" Offset="1"/>
+                  </LinearGradientBrush>
+                </Grid.Background>
+              </Grid>
+
+              <Label x:Name="lbl_SidePanel_Title" Content="NAME" HorizontalAlignment="Left" FontSize="18" Margin="5 0 0 35" VerticalAlignment="Bottom"/>
+              <StackPanel x:Name="container_Tags" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="30" Margin="5"/>
+            </Grid>
+
+            <Common:Common_Button x:Name="btn_Act" Label="Apply Wallpaper" Margin="10 5" Height="37" Classes="Positive"/>
+            <Grid ColumnDefinitions="* 5 *" Margin="10 0">
+              <Common:Common_Button Grid.Column="0" x:Name="btn_Act2" Label="Browse" Height="35"/>
+              <Common:Common_Button Grid.Column="2" x:Name="btn_Act3" Label="Reset" Height="35"/>
+            </Grid>
+          </StackPanel>
+
+          <ScrollViewer Grid.Row="1" x:Name="scroll_Content">
+            <Grid x:Name="container"/>
+          </ScrollViewer>
+        </Grid>
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>

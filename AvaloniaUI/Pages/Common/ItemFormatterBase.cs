@@ -1,16 +1,44 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Logic;
 using Logic.Data;
 
 namespace AvaloniaUI.Pages.Common;
 
-public interface IItemFormatterBase
+public abstract class ItemFormatterBase : UserControl
 {
-    public long? currentlySelectedWallpaper { get; set; }
+    protected Func<DataFetchRequest, Task<DataFetchResponse>>? dataFetcher;
 
-    public void Setup(Common_ItemViewer viewer, Func<long, Task> sidePanelHandler, Func<DataFetchRequest, Task<DataFetchResponse>> dataFetcher);
-    public Task Reset();
+    protected Common_Sidebar? sidebar;
+    protected IFilterHandler? filter;
 
-    public Task Draw(bool additive);
-    public void SelectWallpaper(long id);
+    public abstract long? currentlySelectedWallpaper { get; set; }
+
+    public virtual void Setup(Common_Sidebar sidebar, IFilterHandler filter, Func<DataFetchRequest, Task<DataFetchResponse>> dataFetcher)
+    {
+        this.dataFetcher = dataFetcher;
+
+        this.filter = filter;
+        this.sidebar = sidebar;
+
+        filter?.Bind(() => Draw(false, true));
+    }
+
+    public virtual Task Reset()
+    {
+        filter?.DrawTags(WorkshopManager.GetAllTags());
+        return Task.CompletedTask;
+    }
+
+    public abstract Task Draw(bool additive, bool resetPaging);
+
+    public virtual async Task SelectWallpaper(IWorkshopEntry entry)
+    {
+        if (entry.getId == currentlySelectedWallpaper)
+            return;
+
+        currentlySelectedWallpaper = entry.getId;
+        await (sidebar?.Draw(entry) ?? Task.CompletedTask);
+    }
 }

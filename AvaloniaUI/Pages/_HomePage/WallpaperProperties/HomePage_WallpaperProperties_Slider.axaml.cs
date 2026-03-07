@@ -20,7 +20,7 @@ public partial class HomePage_WallpaperProperties_Slider : UserControl, IWallpap
     {
         InitializeComponent();
 
-        this.Height = HomePage.PROPERTY_DEFAULT_HEIGHT;
+        this.Height = HomePage.PROPERTY_DEFAULT_HEIGHT * 2;
         this.lbl.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
         this.amount.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
     }
@@ -56,6 +56,7 @@ public partial class HomePage_WallpaperProperties_Slider : UserControl, IWallpap
     {
         key = name;
         lbl.Content = label;
+        amount.Content = inp.Value.ToString("0.000");
 
         inp.ValueChanged += (_, __) => OnChangeValue();
 

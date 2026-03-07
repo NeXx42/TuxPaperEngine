@@ -1,10 +1,40 @@
 <UserControl xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages._HomePage.WallpaperProperties.HomePage_WallpaperProperties_Slider">
-  <Grid ColumnDefinitions="100, *, 50" ColumnSpacing="15" Height="50">
-    <Label x:Name="lbl" Content="Offset X" VerticalAlignment="Center" FontSize="10"/>
-    <Slider x:Name="inp" Grid.Column="1"/>
-    <Label x:Name="amount" Grid.Column="2" Height="20"/>
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="60" x:Class="AvaloniaUI.Pages._HomePage.WallpaperProperties.HomePage_WallpaperProperties_Slider">
+  <Grid>
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
+      <Label x:Name="lbl" Content="Offset X" HorizontalAlignment="Left" FontSize="10" />
+      <Label x:Name="amount" Content="abc" HorizontalAlignment="Right" />
+    </Grid>
+
+    <Slider x:Name="inp" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+      <Slider.Styles>
+        <Style Selector="Slider:horizontal">
+
+          <Style Selector="^ Track">
+            <Style Selector="^ RepeatButton#PART_DecreaseButton Border">
+              <Setter Property="Height" Value="7"/>
+              <Setter Property="Background" Value="#3b82f6"/>
+              <Setter Property="CornerRadius" Value="4,0,0,4"/>
+            </Style>
+
+            <Style Selector="^ RepeatButton#PART_IncreaseButton Border">
+              <Setter Property="Height" Value="7"/>
+              <Setter Property="Background" Value="#374151"/>
+              <Setter Property="CornerRadius" Value="0,4,4,0"/>
+            </Style>
+
+            <Style Selector="^ Thumb">
+              <Setter Property="Height" Value="18"/>
+              <Setter Property="Width" Value="18"/>
+              <Setter Property="Background" Value="White"/>
+            </Style>
+          </Style>
+
+        </Style>
+      </Slider.Styles>
+    </Slider>
+
   </Grid>
 </UserControl>

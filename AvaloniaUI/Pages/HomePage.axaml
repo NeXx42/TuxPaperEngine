@@ -2,6 +2,16 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.HomePage"
-  xmlns:Common="clr-namespace:AvaloniaUI.Pages.Common">
-  <Common:Common_ItemViewer x:Name="ItemViewer"/>
+  xmlns:Common="clr-namespace:AvaloniaUI.Pages.Common"
+  xmlns:PageElements="clr-namespace:AvaloniaUI.Pages._HomePage">
+  <Grid ColumnDefinitions="* Auto">
+    <Grid RowDefinitions="100 *">
+      <Common:FilterContainer x:Name="Filters"/>
+      <ScrollViewer Grid.Row="1">
+        <Common:Common_ItemFormatter_EndlessGrid x:Name="ItemViewer"/>
+      </ScrollViewer>
+    </Grid>
+
+    <Common:Common_Sidebar Grid.Column="1" x:Name="Sidebar"/>
+  </Grid>
 </UserControl>

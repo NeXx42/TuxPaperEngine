@@ -15,30 +15,10 @@ namespace AvaloniaUI.Common
     {
         private Action? callback;
 
-        private ImmutableSolidColorBrush? originalBrush;
-        private ImmutableSolidColorBrush? selectedBrush;
-
-        private CancellationTokenSource? animationToken;
-
         public Common_Button()
         {
             InitializeComponent();
             DataContext = this;
-
-            if (ctrl.Background is ImmutableSolidColorBrush scb)
-            {
-                callback = AnimatePress;
-
-                float mixAmount = .2f;
-
-                originalBrush = scb;
-                selectedBrush = new ImmutableSolidColorBrush(Color.FromArgb(
-                    originalBrush.Color.A,
-                    (byte)(originalBrush.Color.R + (255 - originalBrush.Color.R) * mixAmount),
-                    (byte)(originalBrush.Color.G + (255 - originalBrush.Color.G) * mixAmount),
-                    (byte)(originalBrush.Color.B + (255 - originalBrush.Color.B) * mixAmount)
-                ));
-            }
 
             ctrl.PointerPressed += (_, __) => callback?.Invoke();
         }
@@ -60,38 +40,6 @@ namespace AvaloniaUI.Common
         public void RegisterClick(Action callback)
         {
             this.callback += () => callback?.Invoke();
-        }
-
-        private async void AnimatePress()
-        {
-            animationToken?.Cancel();
-            animationToken = new CancellationTokenSource();
-
-            var animation = new Animation
-            {
-                Duration = TimeSpan.FromMilliseconds(400),
-                Easing = new CubicEaseOut(),
-                Children =
-                {
-                    new KeyFrame
-                    {
-                        Setters = { new Setter(Border.BackgroundProperty, originalBrush) },
-                        Cue = new Cue(0)
-                    },
-                    new KeyFrame
-                    {
-                        Setters = { new Setter(Border.BackgroundProperty, selectedBrush) },
-                        Cue = new Cue(0.5)
-                    },
-                    new KeyFrame
-                    {
-                        Setters = { new Setter(Border.BackgroundProperty, originalBrush) },
-                        Cue = new Cue(1)
-                    }
-                }
-            };
-
-            await animation.RunAsync(ctrl, animationToken.Token);
         }
     }
 }

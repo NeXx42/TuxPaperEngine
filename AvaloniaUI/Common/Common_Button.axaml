@@ -3,7 +3,37 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Class="AvaloniaUI.Common.Common_Button"
   xmlns:local="clr-namespace:AvaloniaUI.Common" x:DataType="local:Common_Button">
-  <Border x:Name="ctrl" CornerRadius="2" Background="#2C2C2C" BorderBrush="#FF444444" BorderThickness="1">
-    <TextBlock Margin="5,0" Text="{Binding Label, Mode=OneWay}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+  <UserControl.Styles>
+    <Style Selector="Border#ctrl">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="rgb(46, 46, 56)"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+    <Style Selector="Border#ctrl TextBlock">
+      <Setter Property="Foreground" Value="rgb(138, 143, 168)"/>
+    </Style>
+
+    <Style Selector="local|Common_Button.Positive Border#ctrl">
+      <Setter Property="Background" Value="rgb(88, 101, 242)"/>
+      <Setter Property="BorderBrush" Value="rgb(88, 101, 242)"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+    <Style Selector="local|Common_Button.Positive Border#ctrl TextBlock">
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="local|Common_Button.Positive2 Border#ctrl">
+      <Setter Property="Background" Value="rgb(88, 101, 242)"/>
+      <Setter Property="BorderBrush" Value="rgb(88, 101, 242)"/>
+    </Style>
+    <Style Selector="local|Common_Button.Positive2 Border#ctrl TextBlock">
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+  </UserControl.Styles>
+
+
+  <Border x:Name="ctrl" BorderThickness="1">
+    <TextBlock Margin="5,0" Text="{Binding Label, Mode=OneWay}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
   </Border>
 </UserControl>

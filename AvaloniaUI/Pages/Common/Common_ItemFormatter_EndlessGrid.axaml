@@ -4,7 +4,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.Common.Common_ItemFormatter_EndlessGrid"
   xmlns:Common="clr-namespace:AvaloniaUI.Common">
   <StackPanel Spacing="20" Margin="10">
-    <WrapPanel x:Name="grid_Content_Container" HorizontalAlignment="Center" ItemSpacing="5" LineSpacing="5" />
+    <WrapPanel x:Name="grid_Content_Container" HorizontalAlignment="Center" ItemSpacing="10" LineSpacing="10" />
     <Common:Common_Button Label="Load More" Height="40" Width="200" x:Name="btn_LoadMore"/>
   </StackPanel>
 </UserControl>

@@ -1,10 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
+using Avalonia.Rendering.Composition;
+using Avalonia.Styling;
 using AvaloniaUI.Pages.Common;
 using AvaloniaUI.Utils;
 using Logic.Data;
@@ -17,20 +20,31 @@ public partial class Common_Wallpaper : UserControl
     private static Thickness? selectedThickness;
     private static ImmutableSolidColorBrush? selectedBrush;
 
-    private long? representingId;
-    private IItemFormatterBase? master;
+    private IWorkshopEntry? representing;
+    private ItemFormatterBase? master;
 
     public Common_Wallpaper()
     {
         InitializeComponent();
-
-        border.PointerPressed += (_, __) => HandleSelection();
+        border.PointerPressed += (_, __) => _ = HandleSelection();
     }
 
-    public async void StartDraw(IWorkshopEntry entry, IItemFormatterBase master)
+    public void DrawSkeleton()
     {
+        skeleton_Shimmer.IsVisible = true;
+
+        this.representing = null;
+
+        lbl_Title.Content = string.Empty;
+        img_Icon.Background = null;
+    }
+
+    public async void StartDraw(IWorkshopEntry entry, ItemFormatterBase master)
+    {
+        skeleton_Shimmer.IsVisible = false;
+
         this.master = master;
-        this.representingId = entry.getId;
+        this.representing = entry;
         lbl_Title.Content = entry.getTitle;
 
         img_Icon.Background = null;
@@ -38,19 +52,19 @@ public partial class Common_Wallpaper : UserControl
         img_Icon.Background = brush;
     }
 
-    private void HandleSelection()
+    private async Task HandleSelection()
     {
-        if (master == null || !representingId.HasValue)
+        if (master == null || representing == null)
             return;
 
-        master.SelectWallpaper(representingId.Value);
+        await master.SelectWallpaper(representing);
     }
 
     public void ToggleSelection(bool to)
     {
         unselectedThickness ??= new Thickness(0);
         selectedThickness ??= new Thickness(2);
-        selectedBrush ??= new ImmutableSolidColorBrush(Color.FromRgb(0, 255, 0));
+        selectedBrush ??= new ImmutableSolidColorBrush(Color.FromRgb(88, 101, 242));
 
         border.BorderThickness = to ? selectedThickness.Value : unselectedThickness.Value;
         border.BorderBrush = to ? selectedBrush : null;

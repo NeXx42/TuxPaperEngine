@@ -6,4 +6,5 @@ public struct DataFetchRequest
     public int take;
 
     public string? textFilter;
+    public HashSet<string>? tags;
 }

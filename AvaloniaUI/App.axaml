@@ -7,7 +7,7 @@
     </Application.Styles>
 
     <Application.Resources>
-        <SolidColorBrush x:Key="bg_Panel" Color="#121212"/>
+        <SolidColorBrush x:Key="bg_Panel" Color="#191919"/>
         <SolidColorBrush x:Key="bg_Panel_Light" Color="#1F1F1F"/>
     </Application.Resources>
 </Application>

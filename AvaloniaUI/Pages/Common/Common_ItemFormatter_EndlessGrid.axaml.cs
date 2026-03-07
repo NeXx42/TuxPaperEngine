@@ -9,21 +9,15 @@ using Logic.Data;
 
 namespace AvaloniaUI.Pages.Common;
 
-public partial class Common_ItemFormatter_EndlessGrid : UserControl, IItemFormatterBase
+public partial class Common_ItemFormatter_EndlessGrid : ItemFormatterBase
 {
-    public const int ENTRIES_PER_PAGE = 50;
+    public const int ENTRIES_PER_PAGE = 45;
+    public const int ENTRY_SIZE = 160;
 
     private int loadedPages = 0;
-    private string? cachedNameFilter;
-
-    private Common_ItemViewer? viewer;
-
-    private Func<long, Task>? sidePanelHandler;
-    private Func<DataFetchRequest, Task<DataFetchResponse>>? dataFetcher;
-
     private Dictionary<long, Common_Wallpaper> cachedWallpaperUI = new Dictionary<long, Common_Wallpaper>();
 
-    public long? currentlySelectedWallpaper
+    public override long? currentlySelectedWallpaper
     {
         set
         {
@@ -33,7 +27,6 @@ public partial class Common_ItemFormatter_EndlessGrid : UserControl, IItemFormat
             }
 
             m_currentlySelectedWallpaper = value;
-            viewer!.grid_SidePanel.IsVisible = m_currentlySelectedWallpaper.HasValue;
 
             if (m_currentlySelectedWallpaper.HasValue && cachedWallpaperUI.TryGetValue(m_currentlySelectedWallpaper.Value, out ui))
             {
@@ -49,35 +42,31 @@ public partial class Common_ItemFormatter_EndlessGrid : UserControl, IItemFormat
     {
         InitializeComponent();
         btn_LoadMore.RegisterClick(LoadExtraEntries);
-        //viewer.btn_Refresh.RegisterClick(() => LoadPage(true));
     }
 
-    public void Setup(Common_ItemViewer viewer, Func<long, Task> sidePanelHandler, Func<DataFetchRequest, Task<DataFetchResponse>> dataFetcher)
+    public override async Task Reset()
     {
-        this.viewer = viewer;
-        this.sidePanelHandler = sidePanelHandler;
-        this.dataFetcher = dataFetcher;
-
-        viewer.inp_NameSearch.KeyUp += async (_, __) => await UpdateFilter();
-    }
-
-    public async Task Reset()
-    {
-        loadedPages = 0;
-        currentlySelectedWallpaper = null;
-
         await MainWindow.AsyncLoad(WorkshopManager.RefreshLocalEntries);
-        await Draw(false);
+        await Draw(false, true);
+
+        await base.Reset();
     }
 
-    public async Task Draw(bool additive)
+    public override async Task Draw(bool additive, bool resetPaging)
     {
+        if (resetPaging)
+        {
+            loadedPages = 0;
+            currentlySelectedWallpaper = null;
+        }
+
         DataFetchResponse res = await dataFetcher!(new DataFetchRequest()
         {
             skip = loadedPages * ENTRIES_PER_PAGE,
             take = ENTRIES_PER_PAGE,
 
-            textFilter = viewer!.inp_NameSearch.Text
+            textFilter = filter?.GetTextFilter(),
+            tags = filter?.GetTagFilter(),
         });
 
         if (!additive)
@@ -86,6 +75,8 @@ public partial class Common_ItemFormatter_EndlessGrid : UserControl, IItemFormat
         for (int i = 0; i < res.entries!.Length; i++)
         {
             Common_Wallpaper ui = GetWallpaperUI(res.entries![i]);
+            ui.Width = ENTRY_SIZE;
+            ui.Height = ENTRY_SIZE;
 
             ui.StartDraw(res.entries![i], this);
             grid_Content_Container.Children.Add(ui);
@@ -108,37 +99,9 @@ public partial class Common_ItemFormatter_EndlessGrid : UserControl, IItemFormat
         }
     }
 
-
-
-    public async void SelectWallpaper(long id)
-    {
-        if (id == currentlySelectedWallpaper)
-            return;
-
-        currentlySelectedWallpaper = id;
-        viewer!.OpenSidePanel();
-
-        await sidePanelHandler!(id);
-    }
-
-
-
     private async Task LoadExtraEntries()
     {
         loadedPages++;
-        await Draw(true);
-    }
-
-    private async Task UpdateFilter()
-    {
-        if (cachedNameFilter == viewer!.inp_NameSearch.Text)
-        {
-            return;
-        }
-
-        cachedNameFilter = viewer.inp_NameSearch.Text;
-
-        loadedPages = 0;
-        await Draw(false);
+        await Draw(true, false);
     }
 }

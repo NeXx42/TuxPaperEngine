@@ -8,13 +8,14 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using AvaloniaUI.Pages._HomePage.WallpaperProperties;
+using AvaloniaUI.Pages.Common;
 using Logic;
 using Logic.Data;
 using Logic.Database;
 
 namespace AvaloniaUI.Pages._HomePage;
 
-public partial class HomePage_SidePanel : UserControl
+public partial class HomePage_SidePanel : UserControl, ISidebarContent
 {
     public const string DEFAULT_SCALING_NAME = "Default";
 
@@ -40,8 +41,11 @@ public partial class HomePage_SidePanel : UserControl
         customProps = new List<IWallpaperProperty>();
     }
 
-    public async Task OnSelectWallpaper(WorkshopEntry entry)
+    public async Task OnSelectWallpaper(IWorkshopEntry iEntry)
     {
+        if (iEntry is not WorkshopEntry entry)
+            return;
+
         Dictionary<string, string?> savedSettings = (await ConfigManager.GetWallpaperSettings(entry.id)).ToDictionary(x => x.settingKey, x => x.settingValue);
 
         DrawDefaultProperties(ref savedSettings);

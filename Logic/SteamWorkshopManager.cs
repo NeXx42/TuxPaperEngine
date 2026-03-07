@@ -6,8 +6,13 @@ namespace Logic;
 
 public static class SteamWorkshopManager
 {
+    private static CancellationTokenSource? activeQuery;
+
     public static async Task<DataFetchResponse> FetchItems(DataFetchRequest filter)
     {
+        await (activeQuery?.CancelAsync() ?? Task.CompletedTask);
+        activeQuery = new CancellationTokenSource();
+
         List<SteamWorkshopEntry> items = new List<SteamWorkshopEntry>();
 
         try
@@ -15,7 +20,7 @@ public static class SteamWorkshopManager
             using (HttpClient client = new HttpClient())
             {
                 string url = BuildURLFromFilter(filter);
-                string html = await client.GetStringAsync(url);
+                string html = await client.GetStringAsync(url, activeQuery.Token);
 
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(html);
@@ -24,6 +29,9 @@ public static class SteamWorkshopManager
 
                 foreach (var item in entries)
                 {
+                    if (activeQuery.IsCancellationRequested)
+                        return new DataFetchResponse();
+
                     string id = item.SelectSingleNode(".//a[contains(@class, 'ugc')]")?.GetDataAttribute("publishedfileid")?.Value ?? "";
                     string name = item.SelectSingleNode(".//div[contains(@class, 'workshopItemTitle')]")?.InnerHtml ?? "";
                     string imgUrl = item.SelectSingleNode(".//img[contains(@class, 'workshopItemPreviewImage')]")?.GetAttributeValue("src", "") ?? "";

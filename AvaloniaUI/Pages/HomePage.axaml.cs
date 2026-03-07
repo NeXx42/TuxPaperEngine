@@ -26,22 +26,30 @@ public partial class HomePage : UserControl
     public const int ENTRY_SIZE = 150;
 
     private bool isSetup = false;
-
-    private Common_ItemFormatter_EndlessGrid formatter;
-    private HomePage_SidePanel sidePanel;
+    private HomePage_SidePanel wallpaperSettings;
 
     public HomePage()
     {
         InitializeComponent();
 
-        sidePanel = new HomePage_SidePanel();
-
-        formatter = new Common_ItemFormatter_EndlessGrid();
-        formatter.Setup(ItemViewer, OnSelectWallpaper, FetchEntries);
-
-        ItemViewer.Setup(formatter, sidePanel);
-        ItemViewer.RegisterAction("Browse To", BrowseToFolder);
-        ItemViewer.RegisterAction("Set Wallpaper", SetWallpaper);
+        wallpaperSettings = Sidebar.AddSubContainer<HomePage_SidePanel>();
+        ItemViewer.Setup(Sidebar.Setup(
+            new Common_Sidebar.ActVars
+            {
+                label = "Apply Wallpaper",
+                callback = SetWallpaper
+            },
+            new Common_Sidebar.ActVars
+            {
+                label = "Browse",
+                callback = BrowseToFolder
+            },
+            new Common_Sidebar.ActVars
+            {
+                label = "Reset",
+                callback = BrowseToFolder
+            }
+        ), Filters, FetchEntries);
     }
 
     public async void LoadPage(bool force = false)
@@ -50,47 +58,34 @@ public partial class HomePage : UserControl
             return;
 
         isSetup = true;
-        await formatter.Reset();
-    }
-
-    private async Task OnSelectWallpaper(long id)
-    {
-        if (!WorkshopManager.TryGetWallpaperEntry(id, out WorkshopEntry? entry))
-            return;
-
-        await entry!.Decode();
-
-        ItemViewer.lbl_SidePanel_Title.Content = entry.title;
-        ItemViewer.DrawTags(entry.tags);
-
-        await sidePanel.OnSelectWallpaper(entry);
-        ItemViewer.img_SidePanel_Icon.Background = await ImageFetcher.GetIcon(entry!);
-    }
-
-    private void BrowseToFolder()
-    {
-        if (formatter.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(formatter.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
-            return;
-
-        new Process() { StartInfo = new ProcessStartInfo { FileName = "xdg-open", Arguments = entry!.path, UseShellExecute = false } }.Start();
+        await ItemViewer.Reset();
     }
 
     private async Task SetWallpaper()
     {
-        if (formatter.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(formatter.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
+        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
             return;
 
-        WallpaperSetter.WallpaperOptions options = sidePanel.GetWallpaperOptions();
+        WallpaperSetter.WallpaperOptions options = wallpaperSettings.GetWallpaperOptions();
 
         await WallpaperSetter.SetWallpaper(entry!.path, options);
-        await sidePanel.SaveWallpaperOptions(formatter.currentlySelectedWallpaper.Value);
+        await wallpaperSettings.SaveWallpaperOptions(ItemViewer.currentlySelectedWallpaper.Value);
+    }
+
+    private Task BrowseToFolder()
+    {
+        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
+            return Task.CompletedTask;
+
+        new Process() { StartInfo = new ProcessStartInfo { FileName = "xdg-open", Arguments = entry!.path, UseShellExecute = false } }.Start();
+        return Task.CompletedTask;
     }
 
     private Task<DataFetchResponse> FetchEntries(DataFetchRequest req)
     {
         return Task.FromResult(new DataFetchResponse()
         {
-            entries = WorkshopManager.GetCachedWallpaperEntries(req.textFilter, null, req.skip, req.take)
+            entries = WorkshopManager.GetCachedWallpaperEntries(req.textFilter, req.tags, req.skip, req.take)
         });
 
     }

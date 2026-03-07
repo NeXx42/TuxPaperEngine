@@ -4,44 +4,26 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages._HomePage.HomePage_SidePanel"
   xmlns:Prop="clr-namespace:AvaloniaUI.Pages._HomePage.WallpaperProperties">
 
-  <StackPanel Spacing="20" Margin="15">
-    <StackPanel Spacing="5">
-      <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
-        <Label Content="Default Settings" FontSize="14" HorizontalAlignment="Center" Margin="5"/>
-      </Border>
-      <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
-        <StackPanel Margin="10" Spacing="5">
-          <Prop:HomePage_WallpaperProperties_Combo x:Name="prop_Scaling"/>
-          <Prop:HomePage_WallpaperProperties_Combo x:Name="prop_Clamp"/>
-          <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_OffsetX"/>
-          <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_OffsetY"/>
-        </StackPanel>
-      </Border>
-    </StackPanel>
+  <StackPanel Spacing="5" Margin="10">
 
+    <Label FontSize="16">Display</Label>
+    <Prop:HomePage_WallpaperProperties_Combo x:Name="prop_Scaling"/>
+    <Prop:HomePage_WallpaperProperties_Combo x:Name="prop_Clamp"/>
+    <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_OffsetX"/>
+    <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_OffsetY"/>
 
-    <StackPanel Spacing="5">
-      <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
-        <Label Content="Colour Settings" FontSize="14" HorizontalAlignment="Center" Margin="5"/>
-      </Border>
-      <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
-        <StackPanel Margin="10" Spacing="5">
-          <Prop:HomePage_WallpaperProperties_Colour x:Name="prop_BGColour"/>
-          <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_Contrast"/>
-          <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_Saturation"/>
-        </StackPanel>
-      </Border>
-    </StackPanel>
+    <Grid Height="2" Margin="0 10" Background="rgb(34, 34, 40)"/>
 
+    <Label FontSize="16">Colouring</Label>
+    <Prop:HomePage_WallpaperProperties_Colour x:Name="prop_BGColour"/>
+    <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_Contrast"/>
+    <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_Saturation"/>
 
     <StackPanel x:Name="cont_SidePanel_CustomPropertiesGroup" Spacing="5">
-      <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
-        <Label Content="Custom Properties" FontSize="14" HorizontalAlignment="Center" Margin="5"/>
-      </Border>
-      <Border Background="{DynamicResource bg_Panel_Light}" CornerRadius="5">
-        <StackPanel Margin="10" Spacing="5" x:Name="cont_SidePanel_CustomProperties">
-        </StackPanel>
-      </Border>
+      <Grid Height="2" Margin="0 10" Background="rgb(34, 34, 40)"/>
+
+      <Label FontSize="16">Wallpaper Properties</Label>
+      <StackPanel Spacing="5" x:Name="cont_SidePanel_CustomProperties"/>
     </StackPanel>
 
   </StackPanel>

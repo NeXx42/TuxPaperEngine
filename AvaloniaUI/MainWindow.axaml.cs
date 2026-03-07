@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -19,21 +20,27 @@ public partial class MainWindow : Window
         instance = this;
 
         InitializeComponent();
+
+        if (Design.IsDesignMode)
+            return;
+
         RegisterScreens();
 
         blurEffect = new ImmutableBlurEffect(5);
 
-        btn_Settings.RegisterClick(() => ToggleSettings(true));
+        Navbar.Setup(0, SelectPage);
 
-        cont_SettingsContainer.PointerPressed += (_, __) => ToggleSettings(false);
-        Page_Settings.PointerPressed += (_, e) => e.Handled = true;
+        //btn_Settings.RegisterClick(() => ToggleSettings(true));
 
-        ToggleSettings(false);
+        //cont_SettingsContainer.PointerPressed += (_, __) => ToggleSettings(false);
+        //Page_Settings.PointerPressed += (_, e) => e.Handled = true;
 
-        btn_Library.RegisterClick(() => OpenMenu(nameof(btn_Library)));
-        btn_Workshop.RegisterClick(() => OpenMenu(nameof(btn_Workshop)));
+        //ToggleSettings(false);
 
-        OpenMenu(nameof(btn_Library));
+        //btn_Library.RegisterClick(() => OpenMenu(nameof(btn_Library)));
+        //btn_Workshop.RegisterClick(() => OpenMenu(nameof(btn_Workshop)));
+
+        //OpenMenu(nameof(btn_Library));
     }
 
     private async void RegisterScreens()
@@ -51,51 +58,47 @@ public partial class MainWindow : Window
         await ConfigManager.RegisterDisplays(unpackedScreens.ToArray());
     }
 
-    public void ToggleSettings(bool to)
+    private void SelectPage(int page)
     {
-        Pages.Effect = to ? blurEffect : null;
-        cont_SettingsContainer.IsVisible = to;
+        Page_Home.IsVisible = false;
+        Page_Workshop.IsVisible = false;
+        Page_Settings.IsVisible = false;
 
-        if (to)
-            Page_Settings.OnOpen();
-    }
-
-    private void OpenMenu(string to)
-    {
-        switch (to)
+        switch (page)
         {
-            case nameof(btn_Library):
-                Page_HomePage.IsVisible = true;
-                Page_WorkshopPage.IsVisible = false;
-
-                Page_HomePage.LoadPage();
+            case 0:
+                Page_Home.IsVisible = true;
+                Page_Home.LoadPage();
                 break;
 
-            case nameof(btn_Workshop):
-                Page_HomePage.IsVisible = false;
-                Page_WorkshopPage.IsVisible = true;
+            case 1:
+                Page_Workshop.IsVisible = true;
+                Page_Workshop.LoadPage();
+                break;
 
-                Page_WorkshopPage.LoadPage();
+            case 2:
+                Page_Settings.IsVisible = true;
+                Page_Settings.OnOpen();
                 break;
         }
     }
 
     public static async Task AsyncLoad(Func<Task> task)
     {
-        instance!.Pages.Effect = instance.blurEffect;
+        //instance!.Pages.Effect = instance.blurEffect;
         Dispatcher.UIThread.Post(() => { });
 
         await task();
-        instance.Pages.Effect = null;
+        //instance.Pages.Effect = null;
     }
 
     public static async Task<T> AsyncLoad_WithReturn<T>(Func<Task<T>> task)
     {
-        instance!.Pages.Effect = instance.blurEffect;
+        //instance!.Pages.Effect = instance.blurEffect;
         Dispatcher.UIThread.Post(() => { });
 
         T res = await task();
-        instance.Pages.Effect = null;
+        //instance.Pages.Effect = null;
 
         return res;
     }

@@ -10,6 +10,23 @@ public static class WorkshopManager
 
     public static int GetWallpaperCount() => filterEntriesCount ?? 0;
 
+    public static string[] GetAllTags()
+    {
+        HashSet<string> existingTags = new HashSet<string>();
+
+
+        foreach (var entry in cachedEntries.Values)
+        {
+            foreach (string tag in entry?.tags ?? [])
+            {
+                if (!existingTags.Contains(tag))
+                    existingTags.Add(tag);
+            }
+        }
+
+        return existingTags.Order().ToArray();
+    }
+
     public static async Task RefreshLocalEntries()
     {
         List<DirectoryInfo> folders = new List<DirectoryInfo>();
@@ -44,6 +61,13 @@ public static class WorkshopManager
         if (!string.IsNullOrEmpty(nameSearch))
         {
             entries = entries.Where(x => x.title?.Contains(nameSearch, StringComparison.InvariantCultureIgnoreCase) ?? false);
+        }
+
+        if (tags?.Count > 0)
+        {
+            entries = entries.Where(
+                x => x.tags?.Where(x => tags.Contains(x)).Count() == tags.Count
+            );
         }
 
         filterEntriesCount = entries.Count();

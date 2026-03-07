@@ -4,17 +4,13 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.Pages.Common.Common_ItemViewer"
   xmlns:Common="clr-namespace:AvaloniaUI.Common"
   xmlns:Elements="clr-namespace:AvaloniaUI.Pages.Common">
-  <Grid>
+  <Grid Background="Red">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="350"/>
     </Grid.ColumnDefinitions>
 
     <Grid Grid.Column="0" x:Name="grid_Content" RowDefinitions="Auto, *">
-      <Grid Margin="10" ColumnDefinitions="* 5 Auto">
-        <TextBox x:Name="inp_NameSearch" Height="30" MinHeight="0" VerticalAlignment="Center" Watermark="Search" CornerRadius="2" Background="#2C2C2C" BorderBrush="#FF444444" BorderThickness="1"/>
-        <Common:Common_Button Label="Filters" Width="150" Grid.Column="2"/>
-      </Grid>
 
       <ScrollViewer Grid.Row="1">
         <Border x:Name="cont_Formatter">
@@ -33,6 +29,7 @@
 
     <!-- SIDE BAR -->
 
+    <!--
     <Grid x:Name="grid_SidePanel" Background="{DynamicResource bg_Panel}" Grid.Column="1" IsVisible="True">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
@@ -64,6 +61,6 @@
         </StackPanel>
       </Border>
     </Grid>
-
+-->
   </Grid>
 </UserControl>

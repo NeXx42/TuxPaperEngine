@@ -20,6 +20,8 @@ public class WorkshopEntry : IWorkshopEntry
     public string? getIconPath => string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, iconPath!);
     public string? getTitle => title;
 
+    public string[]? getTags => tags;
+
     public WorkshopEntry(long id, string path, DateTime? creationDate)
     {
         this.id = id;

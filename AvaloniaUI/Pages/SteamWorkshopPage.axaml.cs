@@ -17,17 +17,21 @@ public partial class SteamWorkshopPage : UserControl
 {
     private bool isSetup = false;
 
-    private Common_ItemFormatter_Paginated itemFormatter;
-
     public SteamWorkshopPage()
     {
         InitializeComponent();
-
-        itemFormatter = new Common_ItemFormatter_Paginated();
-        itemFormatter.Setup(ItemViewer, ViewWallpaper, FetchEntries);
-
-        ItemViewer.Setup(itemFormatter, null);
-        ItemViewer.RegisterAction("Download", DownloadWallpaper);
+        ItemViewer.Setup(Sidebar.Setup(
+            new Common_Sidebar.ActVars
+            {
+                label = "Apply Wallpaper",
+                callback = DownloadWallpaper
+            },
+            new Common_Sidebar.ActVars
+            {
+                label = "Browse",
+                callback = BrowseToFolder
+            }
+        ), Filters, FetchEntries);
     }
 
     public async void LoadPage()
@@ -36,7 +40,7 @@ public partial class SteamWorkshopPage : UserControl
             return;
 
         isSetup = true;
-        await itemFormatter.Reset();
+        await ItemViewer.Reset();
     }
 
     private async Task<DataFetchResponse> FetchEntries(DataFetchRequest req)
@@ -44,19 +48,19 @@ public partial class SteamWorkshopPage : UserControl
         return await SteamWorkshopManager.FetchItems(req);
     }
 
-    private async Task ViewWallpaper(long id)
-    {
-        SteamWorkshopEntry entry = (SteamWorkshopEntry)itemFormatter.GetItemByID(id)!;
-        ItemViewer.lbl_SidePanel_Title.Content = entry.name;
-
-        ItemViewer.img_SidePanel_Icon.Background = await ImageFetcher.GetIcon(entry);
-    }
 
     private async Task DownloadWallpaper()
     {
-        if (!itemFormatter.currentlySelectedWallpaper.HasValue)
+        if (!ItemViewer.currentlySelectedWallpaper.HasValue)
             return;
 
+
+    }
+
+    private async Task BrowseToFolder()
+    {
+        if (!ItemViewer.currentlySelectedWallpaper.HasValue)
+            return;
 
     }
 }

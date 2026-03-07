@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Common.Common_Navbar">
+  <Border Background="#050506" BorderBrush="#19191d" BorderThickness="0 0 1 0">
+
+    <Border.Styles>
+      <Style Selector="StackPanel Border Label">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+      <Style Selector="StackPanel Border">
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="#161619"/>
+      </Style>
+
+      <Style Selector="StackPanel Border.active">
+        <Setter Property="Background" Value="rgb(88, 101, 242)"/>
+      </Style>
+    </Border.Styles>
+
+    <StackPanel HorizontalAlignment="Center" Spacing="5" Margin="5">
+      <Border Width="36" Height="36" x:Name="btn_Home">
+        <Label>⊞</Label>
+      </Border>
+      <Border Width="36" Height="36" x:Name="btn_Workshop">
+        <Label>↓</Label>
+      </Border>
+      <Border Width="36" Height="36" x:Name="btn_Settings">
+        <Label>⚙</Label>
+      </Border>
+    </StackPanel>
+  </Border>
+</UserControl>

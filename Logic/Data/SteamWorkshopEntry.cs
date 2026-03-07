@@ -10,4 +10,6 @@ public class SteamWorkshopEntry : IWorkshopEntry
     public long getId => id;
     public string? getIconPath => imgUrl;
     public string? getTitle => name;
+
+    public string[]? getTags => null;
 }
