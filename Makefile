@@ -1,4 +1,4 @@
-OUTPUT_DIR = ./_Output/
+OUTPUT_DIR = ./Build/Output/
 PROGRAM_NAME = TuxPaperEngine
 
 publish:
@@ -18,6 +18,34 @@ publish:
 	cp -r Engine/build/output ${OUTPUT_DIR}/${PROGRAM_NAME}/Engine
 		
 	#tar -czvf ${OUTPUT_DIR}/GameLibrary.Avalonia.tar.gz -C ${OUTPUT_DIR} Avalonia
+	
+publish-appimage:
+	rm -rf ${OUTPUT_DIR}/*
+	
+	mkdir -p ${OUTPUT_DIR}/${PROGRAM_NAME}
+	
+	# engine
+	cd Engine && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make
+	cp -r Engine/build/output ${OUTPUT_DIR}/${PROGRAM_NAME}/Engine
+		
+	cd ../..
+	dir
+	
+	# app
+	dotnet publish AvaloniaUI/AvaloniaUI.csproj \
+		-c Release \
+		-r linux-x64 \
+		--self-contained true \
+		/p:PublishSingleFile=false \
+		-o ${OUTPUT_DIR}/${PROGRAM_NAME}
+		
+	mkdir -p ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir/usr/bin
+	
+	cp -r ${OUTPUT_DIR}/${PROGRAM_NAME}/* ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir/usr/bin
+	cp ./Build/AppImageData/* ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir
+	
+	appimagetool ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
+	chmod +x ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
 	
 engine:
 	cd Engine && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make
