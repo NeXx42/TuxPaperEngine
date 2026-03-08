@@ -6,7 +6,7 @@
   <Grid RowDefinitions="*, Auto">
 
     <WrapPanel x:Name="grid_Content_Container" HorizontalAlignment="Center" ItemSpacing="15" LineSpacing="15" Margin="10"/>
-    <Label x:Name="lbl_Content_NetworkResponse"/>
+    <Label x:Name="lbl_Content_NetworkResponse" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
     <Border Grid.Row="1" BorderBrush="rgb(34, 34, 40)" BorderThickness="0 1 0 0">
       <StackPanel Orientation="Horizontal" Spacing="5" Margin="5" Height="30" HorizontalAlignment="Center">

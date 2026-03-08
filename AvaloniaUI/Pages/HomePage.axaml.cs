@@ -58,6 +58,10 @@ public partial class HomePage : UserControl
             return;
 
         isSetup = true;
+
+        await WorkshopManager.RefreshLocalEntries();
+        Filters.DrawTags(WorkshopManager.GetAllTags());
+
         await ItemViewer.Reset();
     }
 
@@ -65,8 +69,6 @@ public partial class HomePage : UserControl
     {
         if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
             return;
-
-        //WallpaperSetter.WallpaperOptions options = wallpaperSettings.GetWallpaperOptions();
 
         await wallpaperSettings.SaveWallpaperOptions(ItemViewer.currentlySelectedWallpaper.Value);
         await WallpaperSetter.SetWallpaper(ItemViewer.currentlySelectedWallpaper.Value);

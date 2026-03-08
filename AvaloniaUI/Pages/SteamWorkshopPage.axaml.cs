@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace AvaloniaUI.Pages;
 public partial class SteamWorkshopPage : UserControl
 {
     private bool isSetup = false;
+    private bool hasValidFilters = false;
 
     public SteamWorkshopPage()
     {
@@ -23,13 +25,13 @@ public partial class SteamWorkshopPage : UserControl
         ItemViewer.Setup(Sidebar.Setup(
             new Common_Sidebar.ActVars
             {
-                label = "Apply Wallpaper",
+                label = "Download Wallpaper",
                 callback = DownloadWallpaper
             },
             new Common_Sidebar.ActVars
             {
                 label = "Browse",
-                callback = BrowseToFolder
+                callback = BrowseToWallpaper
             }
         ), Filters, FetchEntries);
     }
@@ -45,7 +47,16 @@ public partial class SteamWorkshopPage : UserControl
 
     private async Task<DataFetchResponse> FetchEntries(DataFetchRequest req)
     {
-        return await SteamWorkshopManager.FetchItems(req);
+        if (!hasValidFilters)
+        {
+            hasValidFilters = true;
+            var res = await SteamWorkshopManager.FetchItems(req, true);
+
+            Filters.DrawTags(SteamWorkshopManager.getTags);
+            return res;
+        }
+
+        return await SteamWorkshopManager.FetchItems(req, false);
     }
 
 
@@ -54,13 +65,18 @@ public partial class SteamWorkshopPage : UserControl
         if (!ItemViewer.currentlySelectedWallpaper.HasValue)
             return;
 
-
+        await SteamCMDManager.DownloadAsset(ItemViewer.currentlySelectedWallpaper.Value, MainWindow.getAuthenticationModal);
     }
 
-    private async Task BrowseToFolder()
+    private async Task BrowseToWallpaper()
     {
         if (!ItemViewer.currentlySelectedWallpaper.HasValue)
             return;
 
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = $"https://steamcommunity.com/sharedfiles/filedetails/?id={ItemViewer.currentlySelectedWallpaper.Value}",
+            UseShellExecute = true
+        });
     }
 }

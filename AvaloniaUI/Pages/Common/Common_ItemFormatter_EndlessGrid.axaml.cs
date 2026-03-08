@@ -46,10 +46,7 @@ public partial class Common_ItemFormatter_EndlessGrid : ItemFormatterBase
 
     public override async Task Reset()
     {
-        await MainWindow.AsyncLoad(WorkshopManager.RefreshLocalEntries);
         await Draw(false, true);
-
-        await base.Reset();
     }
 
     public override async Task Draw(bool additive, bool resetPaging)

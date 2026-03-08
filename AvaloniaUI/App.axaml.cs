@@ -24,7 +24,6 @@ public partial class App : Application
             await ConfigManager.Init();
             await ImageFetchingManager.Init(ImageFetcher.HandleBrushCreation, ImageFetcher.HandleWebBrushCreation);
         }
-
     }
 
 

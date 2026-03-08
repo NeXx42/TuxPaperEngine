@@ -5,13 +5,13 @@ namespace Logic;
 
 public static class ImageFetchingManager
 {
-    public const int ICON_FETCH_PER_ITERATION = 10;
+    public const int ICON_FETCH_PER_ITERATION = 30;
     public const int ICON_CACHE_LIMIT = 200;
 
     public delegate Task IconFetchCallback(long entryId, object? result);
 
     private static Func<string, Task<object?>>? iconFetchTask;
-    private static Func<string, Task<(byte[]?, object?)>>? webIconFetch;
+    private static Func<MemoryStream, Task<object?>>? webIconFetch;
 
     private static ConcurrentBag<long> persistentCache = new ConcurrentBag<long>();
 
@@ -19,11 +19,10 @@ public static class ImageFetchingManager
     private static ConcurrentDictionary<long, IconFetchRequest> iconFetchQueue = new ConcurrentDictionary<long, IconFetchRequest>();
 
     private static Thread? iconThread;
-
     private static string getPersistentCacheRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache", ConfigManager.APPLICATION_NAME, ".icons");
 
 
-    public static async Task Init(Func<string, Task<object?>> iconFetchTask, Func<string, Task<(byte[]?, object?)>> webIconFetch)
+    public static async Task Init(Func<string, Task<object?>> iconFetchTask, Func<MemoryStream, Task<object?>> webIconFetch)
     {
         if (Directory.Exists(getPersistentCacheRoot))
         {
@@ -101,10 +100,13 @@ public static class ImageFetchingManager
 
                 if (req.path.StartsWith("https://"))
                 {
-                    (byte[]? img, object? brush) = await webIconFetch!(req.path);
+                    byte[] bytes = await SteamWorkshopManager.httpClient.GetByteArrayAsync(req.path);
+                    MemoryStream stream = new MemoryStream(bytes);
+
+                    object? brush = await webIconFetch!(stream);
                     req.result = brush;
 
-                    await CacheIntercept(fetch, img);
+                    await CacheIntercept(fetch, bytes);
                 }
                 else
                 {

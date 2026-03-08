@@ -18,6 +18,9 @@ public partial class Common_Sidebar : UserControl
 {
     private ISidebarContent? content;
 
+    private long? representing;
+    private string defaultActLabel;
+
     public struct ActVars
     {
         public string label;
@@ -27,6 +30,8 @@ public partial class Common_Sidebar : UserControl
     public Common_Sidebar()
     {
         InitializeComponent();
+
+        SteamCMDManager.onDownloadChange += UpdateDownloadStatus;
         _ = Draw(null);
     }
 
@@ -35,7 +40,7 @@ public partial class Common_Sidebar : UserControl
         btn_Act2.IsVisible = false;
         btn_Act3.IsVisible = false;
 
-        btn_Act.Label = mainAct.label;
+        defaultActLabel = mainAct.label;
         btn_Act.RegisterClick(mainAct.callback);
 
         if (subActs.Length >= 1)
@@ -76,10 +81,17 @@ public partial class Common_Sidebar : UserControl
     {
         if (entry == null)
         {
+            representing = null;
+
             cont_NoContent.IsVisible = true;
             cont_Content.IsVisible = false;
+
             return;
         }
+
+        representing = entry.getId;
+
+        btn_Act.Label = SteamCMDManager.IsBeingDownloaded(representing.Value) ? "Downloading" : defaultActLabel;
 
         cont_NoContent.IsVisible = false;
         cont_Content.IsVisible = true;
@@ -105,5 +117,13 @@ public partial class Common_Sidebar : UserControl
 
             container_Tags.Children.Add(tagUI);
         }
+    }
+
+    private void UpdateDownloadStatus(long id, DownloadStatus status)
+    {
+        if (representing != id)
+            return;
+
+        btn_Act.Label = status.ToString();
     }
 }

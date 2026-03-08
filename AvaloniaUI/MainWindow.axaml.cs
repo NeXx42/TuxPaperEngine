@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Logic;
@@ -12,8 +13,7 @@ namespace AvaloniaUI;
 public partial class MainWindow : Window
 {
     public static MainWindow? instance { private set; get; }
-
-    private ImmutableBlurEffect? blurEffect;
+    public static IAuthenticationModal getAuthenticationModal => instance!.modal_auth;
 
     public MainWindow()
     {
@@ -25,22 +25,12 @@ public partial class MainWindow : Window
             return;
 
         RegisterScreens();
+    }
 
-        blurEffect = new ImmutableBlurEffect(5);
-
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
         Navbar.Setup(0, SelectPage);
-
-        //btn_Settings.RegisterClick(() => ToggleSettings(true));
-
-        //cont_SettingsContainer.PointerPressed += (_, __) => ToggleSettings(false);
-        //Page_Settings.PointerPressed += (_, e) => e.Handled = true;
-
-        //ToggleSettings(false);
-
-        //btn_Library.RegisterClick(() => OpenMenu(nameof(btn_Library)));
-        //btn_Workshop.RegisterClick(() => OpenMenu(nameof(btn_Workshop)));
-
-        //OpenMenu(nameof(btn_Library));
+        base.OnLoaded(e);
     }
 
     private async void RegisterScreens()
@@ -85,21 +75,16 @@ public partial class MainWindow : Window
 
     public static async Task AsyncLoad(Func<Task> task)
     {
-        //instance!.Pages.Effect = instance.blurEffect;
         Dispatcher.UIThread.Post(() => { });
 
         await task();
-        //instance.Pages.Effect = null;
     }
 
     public static async Task<T> AsyncLoad_WithReturn<T>(Func<Task<T>> task)
     {
-        //instance!.Pages.Effect = instance.blurEffect;
         Dispatcher.UIThread.Post(() => { });
 
         T res = await task();
-        //instance.Pages.Effect = null;
-
         return res;
     }
 }

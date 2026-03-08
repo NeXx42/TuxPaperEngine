@@ -1,5 +1,7 @@
 using System.IO;
 using System.Net.Http;
+using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -11,7 +13,7 @@ namespace AvaloniaUI.Utils;
 
 public static class ImageFetcher
 {
-    public static Task<ImageBrush?> GetIcon(IWorkshopEntry game)
+    public static Task<ImageBrush?> GetIcon(IWorkshopEntry game, CancellationToken? cancellationToken = null)
     {
         TaskCompletionSource<ImageBrush?> req = new TaskCompletionSource<ImageBrush?>(TaskCreationOptions.RunContinuationsAsynchronously);
         ImageFetchingManager.QueueFetchWallpaperIcon(game, HandleReturn);
@@ -20,19 +22,19 @@ public static class ImageFetcher
 
         Task HandleReturn(long gameId, object? brush)
         {
+            if (cancellationToken?.IsCancellationRequested ?? false)
+                return Task.CompletedTask;
+
             req.SetResult(brush != null ? (ImageBrush)brush : null);
             return Task.CompletedTask;
         }
     }
 
-    public static async Task<(byte[]?, object?)> HandleWebBrushCreation(string path)
+    public static async Task<object?> HandleWebBrushCreation(MemoryStream stream)
     {
         try
         {
-            using var http = new HttpClient();
-            byte[] bytes = await http.GetByteArrayAsync(path);
-
-            var bitmap = new Bitmap(new MemoryStream(bytes));
+            var bitmap = new Bitmap(stream);
             ImageBrush? brush = null;
 
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -43,11 +45,11 @@ public static class ImageFetcher
                 };
             });
 
-            return (bytes, brush);
+            return brush;
         }
         catch
         {
-            return (null, null);
+            return null;
         }
     }
 

@@ -25,12 +25,7 @@ public abstract class ItemFormatterBase : UserControl
         filter?.Bind(() => Draw(false, true));
     }
 
-    public virtual Task Reset()
-    {
-        filter?.DrawTags(WorkshopManager.GetAllTags());
-        return Task.CompletedTask;
-    }
-
+    public abstract Task Reset();
     public abstract Task Draw(bool additive, bool resetPaging);
 
     public virtual async Task SelectWallpaper(IWorkshopEntry entry)

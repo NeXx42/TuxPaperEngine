@@ -16,7 +16,7 @@ public static class ConfigManager
 
         SaveStartupScriptLocation,
 
-        SteamWebAPIKey,
+        SteamUsername,
         LastSetWallpaper,
     }
 

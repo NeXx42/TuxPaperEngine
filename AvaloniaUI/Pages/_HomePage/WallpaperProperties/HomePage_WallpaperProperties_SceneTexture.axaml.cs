@@ -43,14 +43,5 @@ public partial class HomePage_WallpaperProperties_SceneTexture : UserControl, IW
     {
         // dont know what to do with this yet
         return null;
-
-        if (!isDirty)
-            return null;
-
-        return new dbo_WallpaperSettings()
-        {
-            wallpaperId = id,
-            settingKey = key!,
-        };
     }
 }

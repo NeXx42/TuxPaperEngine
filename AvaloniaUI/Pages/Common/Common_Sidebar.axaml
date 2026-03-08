@@ -29,10 +29,10 @@
             </Grid>
 
             <Common:Common_Button x:Name="btn_Act" Label="Apply Wallpaper" Margin="10 5" Height="37" Classes="Positive"/>
-            <Grid ColumnDefinitions="* 5 *" Margin="10 0">
-              <Common:Common_Button Grid.Column="0" x:Name="btn_Act2" Label="Browse" Height="35"/>
-              <Common:Common_Button Grid.Column="2" x:Name="btn_Act3" Label="Reset" Height="35"/>
-            </Grid>
+            <UniformGrid Rows="1" ColumnSpacing="5" Margin="10 0">
+              <Common:Common_Button HorizontalAlignment="Stretch" x:Name="btn_Act2" Label="Browse" Height="35"/>
+              <Common:Common_Button HorizontalAlignment="Stretch" x:Name="btn_Act3" Label="Reset" Height="35"/>
+            </UniformGrid>
           </StackPanel>
 
           <ScrollViewer Grid.Row="1" x:Name="scroll_Content">

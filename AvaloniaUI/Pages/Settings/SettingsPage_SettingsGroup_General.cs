@@ -11,6 +11,7 @@ public class SettingsPage_SettingsGroup_General : ISettingsPage
     private SettingsPage_SettingsGroupContainer? ui;
 
     private SettingsPage_Common_DirectorySelector? startupScriptDir;
+    private SettingsPage_Common_Textbox? steamUsername;
 
     public UserControl Setup()
     {
@@ -20,6 +21,9 @@ public class SettingsPage_SettingsGroup_General : ISettingsPage
         startupScriptDir = new SettingsPage_Common_DirectorySelector();
         ui.content.Children.Add(startupScriptDir.Init("Save startup script to", ConfigManager.ConfigKeys.SaveStartupScriptLocation, (p) => string.IsNullOrEmpty(p) ? string.Empty : Path.Combine(p, "startup.sh")));
 
+        steamUsername = new SettingsPage_Common_Textbox();
+        ui.content.Children.Add(steamUsername.Init("Steam Username", ConfigManager.ConfigKeys.SteamUsername));
+
         return ui;
     }
 
@@ -28,6 +32,7 @@ public class SettingsPage_SettingsGroup_General : ISettingsPage
         ui!.IsVisible = true;
 
         await startupScriptDir!.LoadFromConfig();
+        await steamUsername!.LoadFromConfig();
     }
 
     public void Close()

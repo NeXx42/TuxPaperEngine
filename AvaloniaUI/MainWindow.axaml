@@ -4,11 +4,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080" x:Class="AvaloniaUI.MainWindow" Title="AvaloniaUI"
     xmlns:Common="clr-namespace:AvaloniaUI.Common"
     xmlns:Pages="clr-namespace:AvaloniaUI.Pages">
-    <Grid ColumnDefinitions="50 *" Background="#080809">
-        <Common:Common_Navbar x:Name="Navbar"/>
+    <Grid>
+        <Grid ColumnDefinitions="50 *" Background="#080809">
+            <Common:Common_Navbar x:Name="Navbar"/>
 
-        <Pages:HomePage Grid.Column="1" x:Name="Page_Home" IsVisible="False"/>
-        <Pages:SteamWorkshopPage Grid.Column="1" x:Name="Page_Workshop" IsVisible="False"/>
-        <Pages:SettingsPage Grid.Column="1" x:Name="Page_Settings" IsVisible="False"/>
+            <Pages:HomePage Grid.Column="1" x:Name="Page_Home" IsVisible="False"/>
+            <Pages:SteamWorkshopPage Grid.Column="1" x:Name="Page_Workshop" IsVisible="False"/>
+            <Pages:SettingsPage Grid.Column="1" x:Name="Page_Settings" IsVisible="False"/>
+        </Grid>
+        <Common:AuthenticationModal x:Name="modal_auth"/>
     </Grid>
 </Window>

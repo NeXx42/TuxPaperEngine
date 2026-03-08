@@ -14,7 +14,7 @@ namespace AvaloniaUI.Pages.Common;
 public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
 {
     public const int ENTRY_SIZE = 180;
-    public const int ENTRIES_PER_PAGE = 50;
+    public const int ENTRIES_PER_PAGE = 30;
 
     private Common_Wallpaper[] generatedUI;
     private IWorkshopEntry[]? entries;
@@ -63,6 +63,7 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
         btn_Page_2.RegisterClick(() => ChangePageNumber(1));
         btn_Page_3.RegisterClick(() => ChangePageNumber(2));
         btn_Page_4.RegisterClick(() => ChangePageNumber(3));
+        btn_Page_5.RegisterClick(() => ChangePageNumber(4));
     }
 
     public override async Task Draw(bool additive, bool resetPaging)
@@ -71,6 +72,9 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
         {
             currentPage = 0;
         }
+
+        grid_Content_Container.IsVisible = true;
+        lbl_Content_NetworkResponse.IsVisible = false;
 
         foreach (Common_Wallpaper ui in generatedUI)
         {
@@ -91,7 +95,6 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
 
         if (entries != null)
         {
-
             for (int i = 0; i < generatedUI.Length; i++)
             {
                 if (i < entries?.Length)
@@ -108,12 +111,9 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
 
         if (res.exception != null)
         {
+            grid_Content_Container.IsVisible = false;
             lbl_Content_NetworkResponse.IsVisible = true;
             lbl_Content_NetworkResponse.Content = res.exception.Message;
-        }
-        else
-        {
-            lbl_Content_NetworkResponse.IsVisible = false;
         }
     }
 
@@ -122,7 +122,6 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
         currentPage = 1;
         currentlySelectedWallpaper = null;
 
-        await base.Reset();
         await ChangePageNumber(0);
     }
 
@@ -158,12 +157,6 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
 
             pageNum++;
         }
-
-        //btn_Page_1.IsVisible = currentPage > 2;
-        //btn_Page_2.IsVisible = currentPage > 1;
-
-        //btn_Page_3.IsVisible = currentPage >= 1; // some how need a way to find out what the end is
-        //btn_Page_4.IsVisible = currentPage >= 1; 
 
         await Draw(false, false);
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -19,6 +20,8 @@ public partial class Common_Wallpaper : UserControl
     private static Thickness? unselectedThickness;
     private static Thickness? selectedThickness;
     private static ImmutableSolidColorBrush? selectedBrush;
+
+    private CancellationTokenSource? cancellationToken;
 
     private IWorkshopEntry? representing;
     private ItemFormatterBase? master;
@@ -41,15 +44,27 @@ public partial class Common_Wallpaper : UserControl
 
     public async void StartDraw(IWorkshopEntry entry, ItemFormatterBase master)
     {
-        skeleton_Shimmer.IsVisible = false;
+        await (cancellationToken?.CancelAsync() ?? Task.CompletedTask);
+        cancellationToken = new CancellationTokenSource();
 
-        this.master = master;
-        this.representing = entry;
-        lbl_Title.Content = entry.getTitle;
+        await InternalDraw(entry, cancellationToken.Token);
 
-        img_Icon.Background = null;
-        ImageBrush? brush = await ImageFetcher.GetIcon(entry);
-        img_Icon.Background = brush;
+        async Task InternalDraw(IWorkshopEntry entry, CancellationToken token)
+        {
+            skeleton_Shimmer.IsVisible = false;
+
+            this.master = master;
+            this.representing = entry;
+            lbl_Title.Content = entry.getTitle;
+
+            img_Icon.Background = null;
+            ImageBrush? brush = await ImageFetcher.GetIcon(entry, token);
+
+            if (token.IsCancellationRequested)
+                return;
+
+            img_Icon.Background = brush;
+        }
     }
 
     private async Task HandleSelection()

@@ -33,6 +33,9 @@ public static class WorkshopManager
 
         foreach (string dir in ConfigManager.localWorkshopLocations!)
         {
+            if (!Directory.Exists(dir))
+                continue;
+
             string[] entries = Directory.GetDirectories(dir);
             foreach (string wallpaper in entries)
             {

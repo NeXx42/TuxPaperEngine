@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Common.AuthenticationModal">
+  <Grid Background="Black" x:Name="cont">
+    <Border VerticalAlignment="Center" HorizontalAlignment="Center" Width="300" BorderBrush="rgb(46, 46, 56)" BorderThickness="1" Background="rgb(17, 17, 21)" CornerRadius="10">
+      <StackPanel Margin="5" Spacing="15">
+        <Label HorizontalAlignment="Center">Login</Label>
+
+        <Grid ColumnDefinitions="* 5 50">
+          <TextBox x:Name="inp_password"/>
+          <Button Grid.Column="2" x:Name="btn_login">login</Button>
+        </Grid>
+
+        <Label x:Name="lbl_error">Error</Label>
+      </StackPanel>
+    </Border>
+  </Grid>
+</UserControl>
