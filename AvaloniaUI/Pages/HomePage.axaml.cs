@@ -66,10 +66,10 @@ public partial class HomePage : UserControl
         if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
             return;
 
-        WallpaperSetter.WallpaperOptions options = wallpaperSettings.GetWallpaperOptions();
+        //WallpaperSetter.WallpaperOptions options = wallpaperSettings.GetWallpaperOptions();
 
-        await WallpaperSetter.SetWallpaper(entry!.path, options);
         await wallpaperSettings.SaveWallpaperOptions(ItemViewer.currentlySelectedWallpaper.Value);
+        await WallpaperSetter.SetWallpaper(ItemViewer.currentlySelectedWallpaper.Value);
     }
 
     private Task BrowseToFolder()

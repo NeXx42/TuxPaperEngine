@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Logic;
 using Logic.Data;
 using Logic.Database;
 
@@ -76,13 +77,5 @@ public partial class HomePage_WallpaperProperties_Combo : UserControl, IWallpape
             settingKey = key!,
             settingValue = inp.SelectedIndex.ToString()
         };
-    }
-
-    public string? CreateArgument()
-    {
-        if (!isDirty)
-            return null;
-
-        return $"{key!}={SelectedValue}";
     }
 }

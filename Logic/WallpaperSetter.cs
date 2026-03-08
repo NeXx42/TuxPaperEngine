@@ -1,10 +1,24 @@
 using System.Diagnostics;
 using System.IO.IsolatedStorage;
 using CSharpSqliteORM;
+using Logic.Data;
 using Logic.Database;
 using Logic.db;
 
 namespace Logic;
+
+public enum DefaultProps
+{
+    DefaultProp_Clamp,
+    DefaultProp_Scaling,
+
+    DefaultProp_OffsetX,
+    DefaultProp_OffsetY,
+
+    DefaultProp_BGColour,
+    DefaultProp_Contrast,
+    DefaultProp_Saturation,
+}
 
 public static class WallpaperSetter
 {
@@ -50,18 +64,32 @@ public static class WallpaperSetter
         return res;
     }
 
-    public static async Task SetWallpaper(string path, WallpaperOptions options)
+    public static async Task SetWallpaper(long? id)
     {
         if (string.IsNullOrEmpty(cachedExecutableLocation))
         {
             throw new Exception("No executable linked");
         }
 
+        if (!id.HasValue)
+        {
+            string? lastSet = (await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper))?.value;
+            lastSet.TryParseLong(out id);
+        }
+
+        if (!id.HasValue)
+        {
+            throw new Exception($"Couldn't find wallpaper - {id}");
+        }
+
+        dbo_WallpaperSettings[] savedValues = await ConfigManager.GetWallpaperSettings(id.Value);
+        WallpaperOptions options = new WallpaperOptions(savedValues);
+
         KillExistingRuns(cachedExecutableLocation);
 
         ProcessStartInfo info = options.CreateArgList();
         info.FileName = cachedExecutableLocation;
-        info.ArgumentList.Add(path);
+        info.ArgumentList.Add(id.ToString()!);
 
         info.UseShellExecute = false;
         info.RedirectStandardOutput = true;
@@ -78,6 +106,8 @@ public static class WallpaperSetter
         {
             await SaveCommandToFile(info, saveScriptLocation.value);
         }
+
+        await ConfigManager.SetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper, id.ToString());
     }
 
     private static async Task SaveCommandToFile(ProcessStartInfo arguments, string? path)
@@ -87,6 +117,20 @@ public static class WallpaperSetter
 
         if (File.Exists(path))
             File.Delete(path);
+
+        string? selfContained = Environment.GetEnvironmentVariable("APPIMAGE");
+
+        if (!string.IsNullOrEmpty(selfContained))
+        {
+            using (var writer = new StreamWriter(path))
+            {
+                await writer.WriteLineAsync("#!/bin/bash");
+                await writer.WriteLineAsync($"{selfContained} --startup");
+            }
+
+            GivePermission(path);
+            return;
+        }
 
         ProcessStartInfo info = new ProcessStartInfo();
         info.FileName = "/bin/echo";
@@ -107,7 +151,24 @@ public static class WallpaperSetter
             }
 
             p.WaitForExit();
-            File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.GroupExecute | UnixFileMode.OtherRead | UnixFileMode.OtherWrite | UnixFileMode.OtherExecute);
+            GivePermission(path);
+        }
+
+        void GivePermission(string p)
+        {
+#pragma warning disable CA1416 // Validate platform compatibility
+            File.SetUnixFileMode(p,
+                UnixFileMode.UserRead |
+                UnixFileMode.UserWrite |
+                UnixFileMode.UserExecute |
+                UnixFileMode.GroupRead |
+                UnixFileMode.GroupWrite |
+                UnixFileMode.GroupExecute |
+                UnixFileMode.OtherRead |
+                UnixFileMode.OtherWrite |
+                UnixFileMode.OtherExecute
+            );
+#pragma warning restore CA1416 // Validate platform compatibility
         }
     }
 
@@ -143,17 +204,17 @@ public static class WallpaperSetter
         repeat
     }
 
-    public struct WallpaperOptions
+    public class WallpaperOptions
     {
-        public ClampOptions? clampOptions;
-        public ScalingOptions? scalingOption;
-        public ScreenSettings[] screens;
+        private ClampOptions? clampOptions;
+        private ScalingOptions? scalingOption;
+        private ScreenSettings[] screens;
 
-        public double saturation;
-        public double contrast;
-        public string? borderColour;
+        private double? saturation;
+        private double? contrast;
+        private string? borderColour;
 
-        public string[]? customProperties;
+        private List<string>? customProperties = new List<string>();
 
 
         public struct ScreenSettings
@@ -161,6 +222,38 @@ public static class WallpaperSetter
             public required string screenName;
             public float? offsetX;
             public float? offsetY;
+        }
+
+        public WallpaperOptions(dbo_WallpaperSettings[] overrideOptions)
+        {
+            float offsetX = 0;
+            float offsetY = 0;
+
+            foreach (dbo_WallpaperSettings setting in overrideOptions)
+            {
+                if (Enum.TryParse(setting.settingKey, out DefaultProps prop))
+                {
+                    switch (prop)
+                    {
+                        case DefaultProps.DefaultProp_Clamp: clampOptions = (ClampOptions)int.Parse(setting.settingValue!); break;
+                        case DefaultProps.DefaultProp_Scaling: scalingOption = (ScalingOptions)int.Parse(setting.settingValue!); break;
+                        case DefaultProps.DefaultProp_OffsetX: float.TryParse(setting.settingValue, out offsetX); break;
+                        case DefaultProps.DefaultProp_OffsetY: float.TryParse(setting.settingValue, out offsetY); break;
+
+
+                        case DefaultProps.DefaultProp_BGColour: borderColour = setting.settingValue; break;
+
+                        case DefaultProps.DefaultProp_Contrast: setting.settingValue.TryParseDouble(out contrast); break;
+                        case DefaultProps.DefaultProp_Saturation: setting.settingValue.TryParseDouble(out saturation); break;
+                    }
+
+                    continue;
+                }
+
+                customProperties.Add($"{setting.settingKey}={setting.settingValue}");
+            }
+
+            screens = WorkOutScreenOffsets(-offsetX, -offsetY);
         }
 
 
@@ -198,12 +291,17 @@ public static class WallpaperSetter
                 }
             }
 
+            if (contrast.HasValue)
+            {
+                info.ArgumentList.Add("--contrast");
+                info.ArgumentList.Add((.5f + (contrast / 60) * 1.5f).ToString()!);
+            }
 
-            info.ArgumentList.Add("--contrast");
-            info.ArgumentList.Add(contrast.ToString());
-
-            info.ArgumentList.Add("--saturation");
-            info.ArgumentList.Add(saturation.ToString());
+            if (saturation.HasValue)
+            {
+                info.ArgumentList.Add("--saturation");
+                info.ArgumentList.Add((saturation / 60f * 1.4f).ToString()!);
+            }
 
             if (!string.IsNullOrEmpty(borderColour))
             {

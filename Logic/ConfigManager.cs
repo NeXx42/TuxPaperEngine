@@ -17,19 +17,40 @@ public static class ConfigManager
         SaveStartupScriptLocation,
 
         SteamWebAPIKey,
+        LastSetWallpaper,
     }
 
     public static string[]? localWorkshopLocations { private set; get; }
 
     private static Screen[]? screens;
 
-    public static async Task Init()
+    public static async Task Init(bool fullLoad = true)
     {
         string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{APPLICATION_NAME}.db");
         await Database_Manager.Init(dbPath);
-
-        await LoadWorkshopLocations();
         await WallpaperSetter.TryFindExecutableLocation();
+
+        if (fullLoad)
+        {
+            await LoadWorkshopLocations();
+        }
+    }
+
+    public static async void LoadStartupVersion()
+    {
+        await Init(false);
+
+        dbo_ScreenSettings[] savedScreens = await Database_Manager.GetItems<dbo_ScreenSettings>();
+        screens = savedScreens.Select(x => new Screen()
+        {
+            screenName = x.screenName,
+            priority = x.screenOrder ?? 0
+        }).ToArray();
+
+        await WallpaperSetter.SetWallpaper(null);
+        Console.WriteLine("Set wallpaper");
+
+        Environment.Exit(0);
     }
 
     private static async Task LoadWorkshopLocations()

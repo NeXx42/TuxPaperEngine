@@ -10,6 +10,4 @@ public interface IWallpaperProperty
 
     public dbo_WallpaperSettings? Save(long id);
     public void Load(ref Dictionary<string, string?> options);
-
-    public string? CreateArgument();
 }

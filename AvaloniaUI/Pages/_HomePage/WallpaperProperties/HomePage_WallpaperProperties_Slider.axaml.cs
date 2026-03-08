@@ -96,12 +96,4 @@ public partial class HomePage_WallpaperProperties_Slider : UserControl, IWallpap
         isDirty = true;
         amount.Content = inp.Value.ToString("0.000");
     }
-
-    public string? CreateArgument()
-    {
-        if (!isDirty)
-            return null;
-
-        return $"{key!}={inp.Value}";
-    }
 }

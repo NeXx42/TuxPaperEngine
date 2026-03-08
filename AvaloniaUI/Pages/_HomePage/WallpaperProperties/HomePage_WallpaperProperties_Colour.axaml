@@ -2,8 +2,27 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages._HomePage.WallpaperProperties.HomePage_WallpaperProperties_Colour">
-  <Grid ColumnDefinitions="100, *" ColumnSpacing="15" Height="40">
+  <Grid ColumnDefinitions="*, Auto" ColumnSpacing="15" Height="40">
     <Label x:Name="lbl" Content="Offset Y" VerticalAlignment="Center" FontSize="10" />
-    <TextBox x:Name="inp" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+
+
+    <Button x:Name="inp_Btn" Grid.Column="1" Width="30" Height="30" CornerRadius="8" BorderBrush="rgb(34, 34, 40)" BorderThickness="1">
+      <Button.Flyout>
+        <Flyout Placement="Bottom">
+
+          <Border BorderBrush="rgb(46, 46, 56)" BorderThickness="1" Background="rgb(17, 17, 21)" CornerRadius="10">
+            <StackPanel Width="160" Spacing="8" Margin="10">
+              <Image x:Name="inp_Picker" Height="150" Width="150"/>
+
+              <Grid ColumnDefinitions="30 5 *">
+                <Border x:Name="inp_Showcase" Background="Red" CornerRadius="8" BorderBrush="rgb(34, 34, 40)" BorderThickness="1"/>
+                <TextBox Grid.Column="2" x:Name="inp"/>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+        </Flyout>
+      </Button.Flyout>
+    </Button>
   </Grid>
 </UserControl>

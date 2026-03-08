@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -30,6 +32,12 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            if (desktop.Args?.FirstOrDefault() == "--startup")
+            {
+                ConfigManager.LoadStartupVersion();
+                return;
+            }
+
             desktop.MainWindow = new MainWindow();
         }
 

@@ -55,12 +55,4 @@ public partial class HomePage_WallpaperProperties_TextInput : UserControl, IWall
             settingValue = inp.Text
         };
     }
-
-    public string? CreateArgument()
-    {
-        if (!isDirty)
-            return null;
-
-        return $"{key!}={inp.Text}";
-    }
 }

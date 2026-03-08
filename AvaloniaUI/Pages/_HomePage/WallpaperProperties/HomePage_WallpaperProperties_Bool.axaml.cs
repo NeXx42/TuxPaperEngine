@@ -64,12 +64,4 @@ public partial class HomePage_WallpaperProperties_Bool : UserControl, IWallpaper
             settingValue = (inp.IsChecked ?? false) ? "1" : "0"
         };
     }
-
-    public string? CreateArgument()
-    {
-        if (!isDirty)
-            return null;
-
-        return $"{key!}={((inp.IsChecked ?? false) ? "1" : "0")}";
-    }
 }

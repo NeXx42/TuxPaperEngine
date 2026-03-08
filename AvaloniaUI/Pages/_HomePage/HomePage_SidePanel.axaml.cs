@@ -17,8 +17,6 @@ namespace AvaloniaUI.Pages._HomePage;
 
 public partial class HomePage_SidePanel : UserControl, ISidebarContent
 {
-    public const string DEFAULT_SCALING_NAME = "Default";
-
     private readonly IWallpaperProperty[] defaultProps;
     private List<IWallpaperProperty> customProps;
 
@@ -27,15 +25,15 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
         InitializeComponent();
 
         defaultProps = [
-            prop_Clamp.Init(nameof(prop_Clamp), "Clamp", Enum.GetNames(typeof(WallpaperSetter.ClampOptions)), 0),
-            prop_Scaling.Init(nameof(prop_Scaling), "Scaling", [DEFAULT_SCALING_NAME, .. Enum.GetNames(typeof(WallpaperSetter.ScalingOptions))], 0),
+            prop_Clamp.Init(DefaultProps.DefaultProp_Clamp.ToString(), "Clamp", Enum.GetNames(typeof(WallpaperSetter.ClampOptions)), 0),
+            prop_Scaling.Init(DefaultProps.DefaultProp_Scaling.ToString(), "Scaling", Enum.GetNames(typeof(WallpaperSetter.ScalingOptions)), 0),
 
-            prop_OffsetX.Init(nameof(prop_OffsetX), "Offset X", -1, 1, 0),
-            prop_OffsetY.Init(nameof(prop_OffsetY), "Offset Y", -1, 1, 0),
+            prop_OffsetX.Init(DefaultProps.DefaultProp_OffsetX.ToString(), "Offset X", -1, 1, 0),
+            prop_OffsetY.Init(DefaultProps.DefaultProp_OffsetY.ToString(), "Offset Y", -1, 1, 0),
 
-            prop_BGColour.Init(nameof(prop_BGColour), "Border Colour", Color.FromRgb(0, 0, 0)),
-            prop_Contrast.Init(nameof(prop_Contrast), "Contrast", 0, 60, 30),
-            prop_Saturation.Init(nameof(prop_Saturation), "Saturation", 0, 60, 30),
+            prop_BGColour.Init(DefaultProps.DefaultProp_BGColour.ToString(), "Border Colour", Color.FromRgb(0, 0, 0)),
+            prop_Contrast.Init(DefaultProps.DefaultProp_Contrast.ToString(), "Contrast", 0, 60, 30),
+            prop_Saturation.Init(DefaultProps.DefaultProp_Saturation.ToString(), "Saturation", 0, 60, 30),
         ];
 
         customProps = new List<IWallpaperProperty>();
@@ -62,6 +60,7 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
         prop_OffsetX.Load(ref options);
         prop_OffsetY.Load(ref options);
 
+        prop_BGColour.Load(ref options);
         prop_Contrast.Load(ref options);
         prop_Saturation.Load(ref options);
     }
@@ -125,23 +124,23 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
 
         return null;
     }
+    /*
+        public WallpaperSetter.WallpaperOptions GetWallpaperOptions()
+        {
+            WallpaperSetter.WallpaperOptions options = new WallpaperSetter.WallpaperOptions();
+            options.scalingOption = prop_Scaling.SelectedIndex - 1 >= 0 ? (WallpaperSetter.ScalingOptions)(prop_Scaling.SelectedIndex - 1) : null;
+            options.clampOptions = (WallpaperSetter.ClampOptions)prop_Clamp.SelectedIndex;
 
-    public WallpaperSetter.WallpaperOptions GetWallpaperOptions()
-    {
-        WallpaperSetter.WallpaperOptions options = new WallpaperSetter.WallpaperOptions();
-        options.scalingOption = prop_Scaling.SelectedIndex - 1 >= 0 ? (WallpaperSetter.ScalingOptions)(prop_Scaling.SelectedIndex - 1) : null;
-        options.clampOptions = (WallpaperSetter.ClampOptions)prop_Clamp.SelectedIndex;
+            options.contrast = 0.5f + (prop_Contrast.Value / 60) * 1.5f;
+            options.saturation = prop_Saturation.Value / 60f * 1.4f;
+            options.borderColour = prop_BGColour.StringColour;
 
-        options.contrast = 0.5f + (prop_Contrast.Value / 60) * 1.5f;
-        options.saturation = prop_Saturation.Value / 60f * 1.4f;
-        options.borderColour = prop_BGColour.StringColour;
+            options.screens = WallpaperSetter.WorkOutScreenOffsets(-(float)prop_OffsetX.Value, -(float)prop_OffsetY.Value);
+            options.customProperties = customProps?.Select(x => x.CreateArgument()).Where(x => !string.IsNullOrEmpty(x)).Select(x => x!).ToArray();
 
-        options.screens = WallpaperSetter.WorkOutScreenOffsets(-(float)prop_OffsetX.Value, -(float)prop_OffsetY.Value);
-        options.customProperties = customProps?.Select(x => x.CreateArgument()).Where(x => !string.IsNullOrEmpty(x)).Select(x => x!).ToArray();
-
-        return options;
-    }
-
+            return options;
+        }
+    */
     public async Task SaveWallpaperOptions(long id)
     {
         List<dbo_WallpaperSettings> props = defaultProps!.Select(x => x.Save(id)).Where(x => x != null).ToList()!;
