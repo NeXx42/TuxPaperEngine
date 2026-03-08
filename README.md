@@ -10,9 +10,9 @@ The main intention was to create an application in which i can use wallpaper eng
 <img width="3841" height="1081" alt="2025-12-23-205639_hyprshot" src="https://github.com/user-attachments/assets/409dcdd3-a351-4a69-a00a-7c2444cac1c8" />
 
 **WORK IN PROGRESS**
-<img width="1384" height="836" alt="image" src="https://github.com/user-attachments/assets/2bd80f84-4073-47c8-87bd-5411f26c0d7c" />
-<img width="1366" height="800" alt="image" src="https://github.com/user-attachments/assets/4900ad88-17e7-4a12-b4a9-7dd089b1fa49" />
-<img width="1358" height="803" alt="image" src="https://github.com/user-attachments/assets/62b9928a-b5b9-4955-9abd-abbf0f4e1680" />
+<img width="1635" height="751" alt="image" src="https://github.com/user-attachments/assets/64b214f2-f1bc-4b5a-a44e-a9691e37de1f" />
+<img width="1920" height="1081" alt="image" src="https://github.com/user-attachments/assets/e492d66d-1702-4afd-965e-fa18987ab570" />
+<img width="1921" height="1081" alt="image" src="https://github.com/user-attachments/assets/0459df45-f015-420e-84ad-fc8faa55a63b" />
 
 
 ## Requires
