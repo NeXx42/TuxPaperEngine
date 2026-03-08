@@ -46,6 +46,8 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
         if (iEntry is not WorkshopEntry entry)
             return;
 
+        await entry.Decode();
+
         Dictionary<string, string?> savedSettings = (await ConfigManager.GetWallpaperSettings(entry.id)).ToDictionary(x => x.settingKey, x => x.settingValue);
 
         DrawDefaultProperties(ref savedSettings);
