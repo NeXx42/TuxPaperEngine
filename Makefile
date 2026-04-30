@@ -17,5 +17,5 @@ publish:
 	cp -r ${OUTPUT_DIR}/${PROGRAM_NAME}/* ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir/usr/bin
 	cp ./Build/AppImageData/* ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir
 	
-	appimagetool ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
+	ARCH=x86_64 appimagetool ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
 	chmod +x ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
