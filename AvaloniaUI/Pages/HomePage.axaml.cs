@@ -12,6 +12,7 @@ using AvaloniaUI.Pages._HomePage;
 using AvaloniaUI.Pages._HomePage.WallpaperProperties;
 using AvaloniaUI.Pages.Common;
 using AvaloniaUI.Utils;
+using CSharpSqliteORM;
 using Logic;
 using Logic.Data;
 using Logic.Database;
@@ -47,7 +48,7 @@ public partial class HomePage : UserControl
             new Common_Sidebar.ActVars
             {
                 label = "Reset",
-                callback = BrowseToFolder
+                callback = ResetWallpaperOptions
             }
         ), Filters, FetchEntries);
     }
@@ -67,7 +68,7 @@ public partial class HomePage : UserControl
 
     private async Task SetWallpaper()
     {
-        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
+        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry) || entry == null)
             return;
 
         await wallpaperSettings.SaveWallpaperOptions(ItemViewer.currentlySelectedWallpaper.Value);
@@ -76,11 +77,20 @@ public partial class HomePage : UserControl
 
     private Task BrowseToFolder()
     {
-        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry))
+        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry) || entry == null)
             return Task.CompletedTask;
 
-        new Process() { StartInfo = new ProcessStartInfo { FileName = "xdg-open", Arguments = entry!.path, UseShellExecute = false } }.Start();
+        new Process() { StartInfo = new ProcessStartInfo { FileName = "xdg-open", Arguments = entry.path, UseShellExecute = false } }.Start();
         return Task.CompletedTask;
+    }
+
+    private async Task ResetWallpaperOptions()
+    {
+        if (ItemViewer.currentlySelectedWallpaper == null || !WorkshopManager.TryGetWallpaperEntry(ItemViewer.currentlySelectedWallpaper.Value, out WorkshopEntry? entry) || entry == null)
+            return;
+
+        await Database_Manager.Delete<dbo_WallpaperSettings>(SQLFilter.Equal(nameof(dbo_WallpaperSettings.wallpaperId), entry!.getId));
+        await Sidebar.Draw(entry);
     }
 
     private Task<DataFetchResponse> FetchEntries(DataFetchRequest req)
