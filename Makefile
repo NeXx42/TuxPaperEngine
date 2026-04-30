@@ -23,15 +23,6 @@ publish-appimage:
 	rm -rf ${OUTPUT_DIR}/*
 	
 	mkdir -p ${OUTPUT_DIR}/${PROGRAM_NAME}
-	
-	# engine
-	cd Engine && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make
-	cp -r Engine/build/output ${OUTPUT_DIR}/${PROGRAM_NAME}/Engine
-		
-	cd ../..
-	dir
-	
-	# app
 	dotnet publish AvaloniaUI/AvaloniaUI.csproj \
 		-c Release \
 		-r linux-x64 \
@@ -47,5 +38,5 @@ publish-appimage:
 	appimagetool ${OUTPUT_DIR}/${PROGRAM_NAME}.AppDir ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
 	chmod +x ${OUTPUT_DIR}/${PROGRAM_NAME}.appimage
 	
-engine:
-	cd Engine && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make
+#engine:
+#	cd Engine && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE='Release' .. && make

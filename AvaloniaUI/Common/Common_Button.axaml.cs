@@ -32,9 +32,25 @@ namespace AvaloniaUI.Common
             set => SetValue(LabelProperty, value);
         }
 
-        public void RegisterClick(Func<Task> callback)
+        public void ClearCallback() => callback = null;
+
+        public void RegisterClick(Func<Task> callback, string? activeLabel = null)
         {
-            this.callback += async () => await callback();
+            this.callback += async () =>
+            {
+                if (string.IsNullOrEmpty(activeLabel))
+                {
+                    await callback();
+                    return;
+                }
+
+                string temp = Label;
+                Label = activeLabel;
+
+                await callback();
+
+                Label = temp;
+            };
         }
 
         public void RegisterClick(Action callback)

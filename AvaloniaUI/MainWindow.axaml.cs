@@ -6,6 +6,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using AvaloniaUI.Interfaces;
+using AvaloniaUI.Pages.Modal;
 using Logic;
 
 namespace AvaloniaUI;
@@ -14,6 +16,8 @@ public partial class MainWindow : Window
 {
     public static MainWindow? instance { private set; get; }
     public static IAuthenticationModal getAuthenticationModal => instance!.modal_auth;
+
+    private IModal? activeModal;
 
     public MainWindow()
     {
@@ -25,6 +29,9 @@ public partial class MainWindow : Window
             return;
 
         RegisterScreens();
+        _ = CloseModal();
+
+        modalContainer.PointerPressed += (_, __) => _ = CloseModal();
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -86,5 +93,30 @@ public partial class MainWindow : Window
 
         T res = await task();
         return res;
+    }
+
+
+    public static async Task<T> OpenModal<T>() where T : Control, IModal
+    {
+        MainWindow.instance!.modalContainer.IsVisible = true;
+
+        T modal = Activator.CreateInstance<T>();
+        modal.PointerPressed += (_, e) => e.Handled = true;
+
+        MainWindow.instance!.modalContainer.Children.Add(modal);
+        MainWindow.instance!.activeModal = modal;
+
+        return modal;
+    }
+
+    public static async Task CloseModal()
+    {
+        if (instance!.activeModal?.isBlocking ?? false)
+            return;
+
+        instance!.modalContainer.Children.Clear();
+        instance!.activeModal = null;
+
+        instance!.modalContainer.IsVisible = false;
     }
 }

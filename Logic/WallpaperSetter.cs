@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.IO.IsolatedStorage;
+using System.Text.RegularExpressions;
 using CSharpSqliteORM;
 using Logic.Data;
 using Logic.Database;
 using Logic.db;
+using Logic.Enums;
 
 namespace Logic;
 
@@ -22,25 +24,88 @@ public enum DefaultProps
 
 public static class WallpaperSetter
 {
-    private static string? cachedExecutableLocation;
-
-    public static async Task TryFindExecutableLocation()
+    public static async Task InstallEngineLocally(string fork, string path, IProgress<int> progress, IProgress<int> taskProgress, Action<string> console)
     {
-        dbo_Config? overridePath = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.ExecutableLocation);
+        const string folderName = "linux-wallpaperengine";
 
-        if (overridePath != null)
+        progress.Report(0);
+        await RunCommand(path, "git", "clone", "--recursive", fork, folderName, "--progress");
+        progress.Report(1);
+        taskProgress.Report(0);
+
+        await RunCommand(Path.Combine(path, folderName), "mkdir", "build");
+        await RunCommand(Path.Combine(path, folderName, "build"), "cmake", "-DCMAKE_BUILD_TYPE='Release'", "..");
+
+        progress.Report(2);
+        taskProgress.Report(0);
+
+        await RunCommand(Path.Combine(path, folderName, "build"), "make");
+
+        await Database_Manager.AddOrUpdate(new dbo_Config()
         {
-            cachedExecutableLocation = overridePath.value;
-            return;
+            key = ConfigManager.ConfigKeys.ExecutableLocation.ToString(),
+            value = Path.Combine(path, folderName, "build", "output")
+        }, SQLFilter.Equal(nameof(dbo_Config.key), ConfigManager.ConfigKeys.ExecutableLocation.ToString()));
+
+        await Database_Manager.AddOrUpdate(new dbo_Config()
+        {
+            key = ConfigManager.ConfigKeys.ExecutableType.ToString(),
+            value = ((int)EngineType.Directory).ToString()
+        }, SQLFilter.Equal(nameof(dbo_Config.key), ConfigManager.ConfigKeys.ExecutableType.ToString()));
+
+        async Task RunCommand(string workingDir, string command, params string[] args)
+        {
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = command;
+            info.WorkingDirectory = workingDir;
+
+            foreach (string arg in args)
+                info.ArgumentList.Add(arg);
+
+            info.UseShellExecute = false;
+            info.RedirectStandardOutput = true;
+            info.RedirectStandardError = true;
+            info.CreateNoWindow = true;
+
+            Process p = new Process();
+
+            p.OutputDataReceived += UpdateProgress;
+            p.ErrorDataReceived += UpdateProgress;
+
+            p.StartInfo = info;
+            p.Start();
+
+            p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
+
+            await p.WaitForExitAsync();
         }
 
-        const string exeDir = "Engine/linux-wallpaperengine";
-        string localPath = Path.Combine(AppContext.BaseDirectory, exeDir);
-
-        if (File.Exists(localPath))
+        void UpdateProgress(object sender, DataReceivedEventArgs e)
         {
-            cachedExecutableLocation = localPath;
+            if (e.Data == null)
+                return;
+
+            console?.Invoke(e.Data);
+            var match = Regex.Match(e.Data, @"\d+%");
+
+            if (match.Success)
+                taskProgress.Report(int.Parse(match.Value.Replace("%", "")));
         }
+    }
+
+    public static async Task<string> TryFindExecutableLocation()
+    {
+        dbo_Config? engineType = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.ExecutableType);
+        dbo_Config? enginePath = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.ExecutableLocation);
+
+        if (engineType == null || enginePath == null)
+        {
+            throw new Exception("Invalid install of the engine. Either set the location or command");
+        }
+
+        const string exeDir = "linux-wallpaperengine";
+        return (engineType?.value == ((int)EngineType.Directory).ToString()) ? Path.Combine(enginePath.value!, exeDir) : (enginePath.value ?? exeDir);
     }
 
     public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(float offsetX, float offsetY)
@@ -66,10 +131,7 @@ public static class WallpaperSetter
 
     public static async Task SetWallpaper(long? id)
     {
-        if (string.IsNullOrEmpty(cachedExecutableLocation))
-        {
-            throw new Exception("No executable linked");
-        }
+        string command = await TryFindExecutableLocation();
 
         if (!id.HasValue)
         {
@@ -85,10 +147,10 @@ public static class WallpaperSetter
         dbo_WallpaperSettings[] savedValues = await ConfigManager.GetWallpaperSettings(id.Value);
         WallpaperOptions options = new WallpaperOptions(savedValues);
 
-        KillExistingRuns(cachedExecutableLocation);
+        KillExistingRuns(command);
 
         ProcessStartInfo info = options.CreateArgList();
-        info.FileName = cachedExecutableLocation;
+        info.FileName = command;
         info.ArgumentList.Add(id.ToString()!);
 
         info.UseShellExecute = false;
@@ -104,13 +166,13 @@ public static class WallpaperSetter
 
         if (saveScriptLocation != null)
         {
-            await SaveCommandToFile(info, saveScriptLocation.value);
+            await SaveCommandToFile(command, info, saveScriptLocation.value);
         }
 
         await ConfigManager.SetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper, id.ToString());
     }
 
-    private static async Task SaveCommandToFile(ProcessStartInfo arguments, string? path)
+    private static async Task SaveCommandToFile(string command, ProcessStartInfo arguments, string? path)
     {
         if (string.IsNullOrEmpty(path))
             return;
@@ -135,7 +197,7 @@ public static class WallpaperSetter
         ProcessStartInfo info = new ProcessStartInfo();
         info.FileName = "/bin/echo";
 
-        info.ArgumentList.Add(cachedExecutableLocation!);
+        info.ArgumentList.Add(command!);
 
         foreach (var arg in arguments.ArgumentList)
             info.ArgumentList.Add(arg);

@@ -18,6 +18,7 @@ public static class ConfigManager
 
         SteamUsername,
         LastSetWallpaper,
+        ExecutableType,
     }
 
     public static string[]? localWorkshopLocations { private set; get; }
@@ -28,7 +29,6 @@ public static class ConfigManager
     {
         string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{APPLICATION_NAME}.db");
         await Database_Manager.Init(dbPath);
-        await WallpaperSetter.TryFindExecutableLocation();
 
         if (fullLoad)
         {

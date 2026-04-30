@@ -15,6 +15,10 @@ public partial class SettingsPage_Common_DirectorySelector : UserControl
     private ConfigManager.ConfigKeys? configKey;
     private Func<string?, Task>? callback;
 
+    private dbo_Config? cachedValue;
+
+    public dbo_Config? getCachedValue => cachedValue;
+
     private string? selectedDir
     {
         set
@@ -53,11 +57,11 @@ public partial class SettingsPage_Common_DirectorySelector : UserControl
         if (configKey == null)
             return;
 
-        dbo_Config? key = await ConfigManager.GetConfigValue(configKey.Value);
+        cachedValue = await ConfigManager.GetConfigValue(configKey.Value);
 
-        if (key != null)
+        if (cachedValue != null)
         {
-            selectedDir = key.value;
+            selectedDir = cachedValue.value;
         }
     }
 

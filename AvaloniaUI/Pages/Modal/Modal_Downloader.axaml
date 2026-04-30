@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.Modal.Modal_Downloader"
+  xmlns:Common="clr-namespace:AvaloniaUI.Common">
+  <Border BorderThickness="1" BorderBrush="rgb(34, 34, 40)" Width="400" Height="250" Background="black" CornerRadius="10">
+    <Grid RowDefinitions="30 * 35" Margin="10">
+      <Label Content="Download" HorizontalAlignment="Center" FontSize="16"/>
+
+
+      <StackPanel Grid.Row="1" Spacing="5" IsVisible="True" x:Name="cont_Progress">
+        <Label Content="Downloading - " x:Name="lbl_Step"/>
+        <ProgressBar x:Name="progress_Main" Height="20" Maximum="3"/>
+        <ProgressBar x:Name="progress_Task" Height="20"/>
+        <TextBlock x:Name="lbl_Console" FontSize="8"/>
+      </StackPanel>
+
+      <StackPanel Grid.Row="1" Spacing="10" VerticalAlignment="Center" x:Name="cont_Options" IsVisible="false">
+        <ComboBox HorizontalAlignment="Stretch" Height="35" x:Name="inp_GitProject"/>
+        <Common:Common_Button Label="Install Location" Height="35" x:Name="inp_Dir"/>
+        <Label Content="The Nexx fork contains settings that may not be available with the upstream" FontSize="10" Foreground="#FFC107" HorizontalAlignment="Center"/>
+      </StackPanel>
+
+
+      <Grid Grid.Row="2" ColumnDefinitions="*, 100">
+        <Common:Common_Button x:Name="btn_Act" Label="Download" Classes="Positive" Grid.Column="1" />
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>
