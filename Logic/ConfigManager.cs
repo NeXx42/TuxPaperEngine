@@ -47,7 +47,7 @@ public static class ConfigManager
             priority = x.screenOrder ?? 0
         }).ToArray();
 
-        await WallpaperSetter.SetWallpaper(null);
+        await WallpaperEngine.SetWallpaper(null);
         Console.WriteLine("Set wallpaper");
 
         Environment.Exit(0);

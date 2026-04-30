@@ -20,9 +20,17 @@ public enum DefaultProps
     DefaultProp_BGColour,
     DefaultProp_Contrast,
     DefaultProp_Saturation,
+
+    DefaultProp_Mute,
+    DefaultProp_AudioFeedback,
+    DefaultProp_AutoMute,
+
+    DefaultProp_MouseInteraction,
+    DefaultProp_Parallax,
+    DefaultProp_PauseOnFullscreen,
 }
 
-public static class WallpaperSetter
+public static class WallpaperEngine
 {
     public static async Task InstallEngineLocally(string fork, string path, IProgress<int> progress, IProgress<int> taskProgress, Action<string> console)
     {
@@ -272,6 +280,14 @@ public static class WallpaperSetter
         private ScalingOptions? scalingOption;
         private ScreenSettings[] screens;
 
+        private bool? mute;
+        private bool? noAudioProcessing;
+        private bool? noAutoMute;
+
+        private bool? noFullscreenPause;
+        private bool? disableMouse;
+        private bool? disableParallax;
+
         private double? saturation;
         private double? contrast;
         private string? borderColour;
@@ -307,6 +323,14 @@ public static class WallpaperSetter
 
                         case DefaultProps.DefaultProp_Contrast: setting.settingValue.TryParseDouble(out contrast); break;
                         case DefaultProps.DefaultProp_Saturation: setting.settingValue.TryParseDouble(out saturation); break;
+
+                        case DefaultProps.DefaultProp_Mute: mute = setting.settingValue == "1"; break;
+                        case DefaultProps.DefaultProp_AudioFeedback: noAudioProcessing = setting.settingValue == "0"; break;
+                        case DefaultProps.DefaultProp_AutoMute: noAutoMute = setting.settingValue == "0"; break;
+
+                        case DefaultProps.DefaultProp_PauseOnFullscreen: noFullscreenPause = setting.settingValue == "0"; break;
+                        case DefaultProps.DefaultProp_MouseInteraction: disableMouse = setting.settingValue == "0"; break;
+                        case DefaultProps.DefaultProp_Parallax: disableParallax = setting.settingValue == "0"; break;
                     }
 
                     continue;
@@ -326,63 +350,59 @@ public static class WallpaperSetter
             foreach (string arg in injectedArgs)
                 info.ArgumentList.Add(arg);
 
-            if (scalingOption.HasValue)
-            {
-                info.ArgumentList.Add("--scaling");
-                info.ArgumentList.Add(scalingOption.ToString()!);
-            }
-
-            info.ArgumentList.Add("--clamp");
-            info.ArgumentList.Add((clampOptions ?? ClampOptions.clamp).ToString());
+            TryToAddProp(scalingOption, "--scaling", a => a.ToString()!);
+            TryToAddProp(clampOptions ?? ClampOptions.clamp, "--clamp", a => a.ToString()!);
 
             foreach (ScreenSettings screen in screens)
             {
-                info.ArgumentList.Add("--screen-root");
-                info.ArgumentList.Add(screen.screenName);
-
-                if (screen.offsetX.HasValue)
-                {
-                    info.ArgumentList.Add("--offset-x");
-                    info.ArgumentList.Add(screen.offsetX.ToString()!);
-                }
-
-                if (screen.offsetY.HasValue)
-                {
-                    info.ArgumentList.Add("--offset-y");
-                    info.ArgumentList.Add(screen.offsetY.ToString()!);
-                }
+                TryToAddProp(screen.screenName, "--screen-root", Serialize_String);
+                TryToAddProp(screen.offsetX, "--offset-x", Serialize_Float);
+                TryToAddProp(screen.offsetY, "--offset-y", Serialize_Float);
             }
 
-            if (contrast.HasValue)
-            {
-                info.ArgumentList.Add("--contrast");
-                info.ArgumentList.Add((.5f + (contrast / 60) * 1.5f).ToString()!);
-            }
+            TryToAddProp(contrast, "--contrast", a => (.5f + (contrast / 60) * 1.5f).ToString()!);
+            TryToAddProp(saturation, "--saturation", a => (saturation / 60f * 1.4f).ToString()!);
+            TryToAddProp(borderColour, "--border-colour", Serialize_String);
 
-            if (saturation.HasValue)
-            {
-                info.ArgumentList.Add("--saturation");
-                info.ArgumentList.Add((saturation / 60f * 1.4f).ToString()!);
-            }
+            TryToAddSetting(mute ?? false, "--silent");
+            TryToAddSetting(noAudioProcessing ?? false, "--no-audio-processing");
+            TryToAddSetting(noAutoMute ?? false, "--noautomute");
 
-            if (!string.IsNullOrEmpty(borderColour))
-            {
-                info.ArgumentList.Add("--border-colour");
-                info.ArgumentList.Add(borderColour);
-            }
+            TryToAddSetting(noFullscreenPause ?? false, "--no-fullscreen-pause");
+            TryToAddSetting(disableMouse ?? false, "--disable-mouse");
+            TryToAddSetting(disableParallax ?? false, "--disable-parallax");
 
             if (customProperties != null)
             {
                 foreach (string arg in customProperties)
-                {
-                    info.ArgumentList.Add("--set-property");
-                    info.ArgumentList.Add(arg);
-                }
+                    TryToAddProp(arg, "--set-property", a => a);
             }
 
             info.ArgumentList.Add("--bg");
             return info;
+
+            void TryToAddProp<T>(T? value, string key, Func<T, string> getValue)
+            {
+                if (value == null)
+                    return;
+
+                info.ArgumentList.Add(key);
+                info.ArgumentList.Add(getValue(value!));
+            }
+
+            void TryToAddSetting(bool val, string key)
+            {
+                if (!val)
+                    return;
+
+                info.ArgumentList.Add(key);
+            }
         }
+
+        private string Serialize_String(string? s) => s!;
+        private string Serialize_Bool(bool? b) => b!.Value ? "1" : "0";
+        private string Serialize_Int(int? i) => i!.Value.ToString();
+        private string Serialize_Float(float? i) => i!.Value.ToString();
     }
 
 }

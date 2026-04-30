@@ -19,6 +19,21 @@
     <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_Contrast"/>
     <Prop:HomePage_WallpaperProperties_Slider x:Name="prop_Saturation"/>
 
+    <Grid Height="2" Margin="0 10" Background="rgb(34, 34, 40)"/>
+
+    <Label FontSize="16">Sound</Label>
+    <Prop:HomePage_WallpaperProperties_Bool x:Name="prop_Mute"/>
+    <Prop:HomePage_WallpaperProperties_Bool x:Name="prop_AudioFeedback"/>
+    <Prop:HomePage_WallpaperProperties_Bool x:Name="prop_AutoMute"/>
+
+    <Grid Height="2" Margin="0 10" Background="rgb(34, 34, 40)"/>
+
+    <Label FontSize="16">Interaction</Label>
+    <Prop:HomePage_WallpaperProperties_Bool x:Name="prop_FullscreenPause"/>
+    <Prop:HomePage_WallpaperProperties_Bool x:Name="prop_MouseInteraction"/>
+    <Prop:HomePage_WallpaperProperties_Bool x:Name="prop_Parallax"/>
+
+
     <StackPanel x:Name="cont_SidePanel_CustomPropertiesGroup" Spacing="5">
       <Grid Height="2" Margin="0 10" Background="rgb(34, 34, 40)"/>
 

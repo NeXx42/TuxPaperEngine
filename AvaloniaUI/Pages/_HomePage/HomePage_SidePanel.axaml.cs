@@ -25,8 +25,8 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
         InitializeComponent();
 
         defaultProps = [
-            prop_Clamp.Init(DefaultProps.DefaultProp_Clamp.ToString(), "Clamp", Enum.GetNames(typeof(WallpaperSetter.ClampOptions)), 0),
-            prop_Scaling.Init(DefaultProps.DefaultProp_Scaling.ToString(), "Scaling", Enum.GetNames(typeof(WallpaperSetter.ScalingOptions)), 0),
+            prop_Clamp.Init(DefaultProps.DefaultProp_Clamp.ToString(), "Clamp", Enum.GetNames(typeof(WallpaperEngine.ClampOptions)), 0),
+            prop_Scaling.Init(DefaultProps.DefaultProp_Scaling.ToString(), "Scaling", Enum.GetNames(typeof(WallpaperEngine.ScalingOptions)), 0),
 
             prop_OffsetX.Init(DefaultProps.DefaultProp_OffsetX.ToString(), "Offset X", -1, 1, 0),
             prop_OffsetY.Init(DefaultProps.DefaultProp_OffsetY.ToString(), "Offset Y", -1, 1, 0),
@@ -34,6 +34,14 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
             prop_BGColour.Init(DefaultProps.DefaultProp_BGColour.ToString(), "Border Colour", Color.FromRgb(0, 0, 0)),
             prop_Contrast.Init(DefaultProps.DefaultProp_Contrast.ToString(), "Contrast", 0, 60, 30),
             prop_Saturation.Init(DefaultProps.DefaultProp_Saturation.ToString(), "Saturation", 0, 60, 30),
+
+            prop_Mute.Init(DefaultProps.DefaultProp_Mute.ToString(), "Mute", false),
+            prop_AudioFeedback.Init(DefaultProps.DefaultProp_AudioFeedback.ToString(), "Audio feedback", true),
+            prop_AudioFeedback.Init(DefaultProps.DefaultProp_AutoMute.ToString(), "Auto mute", false),
+
+            prop_FullscreenPause.Init(DefaultProps.DefaultProp_PauseOnFullscreen.ToString(), "Pause in fullscreen", true),
+            prop_MouseInteraction.Init(DefaultProps.DefaultProp_MouseInteraction.ToString(), "Mouse effects", true),
+            prop_Parallax.Init(DefaultProps.DefaultProp_Parallax.ToString(), "Parallax", true),
         ];
 
         customProps = new List<IWallpaperProperty>();

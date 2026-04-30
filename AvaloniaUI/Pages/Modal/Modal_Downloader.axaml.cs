@@ -52,7 +52,7 @@ public partial class Modal_Downloader : UserControl, IModal
 
         inDownload = true;
 
-        await WallpaperSetter.InstallEngineLocally(gitProjects[(string)inp_GitProject.SelectedValue!], selectedDir!,
+        await WallpaperEngine.InstallEngineLocally(gitProjects[(string)inp_GitProject.SelectedValue!], selectedDir!,
             new Progress<int>((i) => Dispatcher.UIThread.Invoke(() =>
             {
                 progress_Main!.Value = i;

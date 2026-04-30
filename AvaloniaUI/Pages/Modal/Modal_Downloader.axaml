@@ -18,7 +18,7 @@
       <StackPanel Grid.Row="1" Spacing="10" VerticalAlignment="Center" x:Name="cont_Options" IsVisible="false">
         <ComboBox HorizontalAlignment="Stretch" Height="35" x:Name="inp_GitProject"/>
         <Common:Common_Button Label="Install Location" Height="35" x:Name="inp_Dir"/>
-        <Label Content="The Nexx fork contains settings that may not be available with the upstream" FontSize="10" Foreground="#FFC107" HorizontalAlignment="Center"/>
+        <Label Content="The Nexx fork contains settings that may not be available with the upstream. However, it will be outdated." FontSize="10" Foreground="#FFC107" HorizontalAlignment="Center"/>
       </StackPanel>
 
 

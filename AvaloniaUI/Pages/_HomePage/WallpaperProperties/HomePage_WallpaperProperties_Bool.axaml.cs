@@ -23,12 +23,19 @@ public partial class HomePage_WallpaperProperties_Bool : UserControl, IWallpaper
         this.inp.FontSize = HomePage.PROPERTY_DEFAULT_FONT_SIZE;
     }
 
+
+
     public IWallpaperProperty Init(WorkshopEntry.Properties prop)
     {
-        key = prop.propertyName;
+        return Init(prop.propertyName!, prop.text!, prop.value == "1");
+    }
 
-        lbl.Content = prop.text;
-        inp.IsChecked = prop.value == "1";
+    public IWallpaperProperty Init(string propertyName, string label, bool value)
+    {
+        key = propertyName;
+
+        lbl.Content = label;
+        inp.IsChecked = value;
 
         defaultVal = inp.IsChecked;
 

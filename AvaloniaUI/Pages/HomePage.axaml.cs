@@ -71,7 +71,7 @@ public partial class HomePage : UserControl
             return;
 
         await wallpaperSettings.SaveWallpaperOptions(ItemViewer.currentlySelectedWallpaper.Value);
-        await WallpaperSetter.SetWallpaper(ItemViewer.currentlySelectedWallpaper.Value);
+        await WallpaperEngine.SetWallpaper(ItemViewer.currentlySelectedWallpaper.Value);
     }
 
     private Task BrowseToFolder()
