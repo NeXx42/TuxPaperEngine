@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    env:
+      OUTPUT_DIR: ./Build/Output/
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libfuse2 \
+            desktop-file-utils \
+            libglib2.0-dev \
+            libgtk-3-dev 
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Download appimagetool
+        run: |
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage \
+            -O appimagetool
+          chmod +x appimagetool
+          sudo mv appimagetool /usr/local/bin/appimagetool
+
+      - name: Build
+        run: make publish
+          
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunixLauncher-AppImage
+          path: ${{ env.OUTPUT_DIR }}/RunixLauncher.appimage
+
+  release:
+    needs: build
+    runs-on: ubuntu-22.04
+    permissions:
+        contents: write
+
+    steps:
+      - name: Download AppImage artifact
+        uses: actions/download-artifact@v4
+        with:
+            name: RunixLauncher-AppImage
+            path: ./output
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+            tag_name: ${{ github.event.inputs.version }}
+            name: v${{ github.event.inputs.version }}
+            files: ./output/RunixLauncher.appimage
