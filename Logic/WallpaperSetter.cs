@@ -32,22 +32,31 @@ public enum DefaultProps
 
 public static class WallpaperEngine
 {
+    public static Action? OnStatusChange;
+
     public static async Task InstallEngineLocally(string fork, string path, IProgress<int> progress, IProgress<int> taskProgress, Action<string> console)
     {
         const string folderName = "linux-wallpaperengine";
 
-        progress.Report(0);
-        await RunCommand(path, "git", "clone", "--recursive", fork, folderName, "--progress");
-        progress.Report(1);
-        taskProgress.Report(0);
+        try
+        {
+            progress.Report(0);
+            await RunCommand(path, "git", "clone", "--recursive", fork, folderName, "--progress");
+            progress.Report(1);
+            taskProgress.Report(0);
 
-        await RunCommand(Path.Combine(path, folderName), "mkdir", "build");
-        await RunCommand(Path.Combine(path, folderName, "build"), "cmake", "-DCMAKE_BUILD_TYPE='Release'", "..");
+            await RunCommand(Path.Combine(path, folderName), "mkdir", "build");
+            await RunCommand(Path.Combine(path, folderName, "build"), "cmake", "-DCMAKE_BUILD_TYPE='Release'", "..");
 
-        progress.Report(2);
-        taskProgress.Report(0);
+            progress.Report(2);
+            taskProgress.Report(0);
 
-        await RunCommand(Path.Combine(path, folderName, "build"), "make");
+            await RunCommand(Path.Combine(path, folderName, "build"), "make");
+        }
+        catch
+        {
+            return;
+        }
 
         await Database_Manager.AddOrUpdate(new dbo_Config()
         {
@@ -60,6 +69,8 @@ public static class WallpaperEngine
             key = ConfigManager.ConfigKeys.ExecutableType.ToString(),
             value = ((int)EngineType.Directory).ToString()
         }, SQLFilter.Equal(nameof(dbo_Config.key), ConfigManager.ConfigKeys.ExecutableType.ToString()));
+
+        OnStatusChange?.Invoke();
 
         async Task RunCommand(string workingDir, string command, params string[] args)
         {
@@ -113,7 +124,18 @@ public static class WallpaperEngine
         }
 
         const string exeDir = "linux-wallpaperengine";
-        return (engineType?.value == ((int)EngineType.Directory).ToString()) ? Path.Combine(enginePath.value!, exeDir) : (enginePath.value ?? exeDir);
+
+        if (engineType?.value == ((int)EngineType.Directory).ToString())
+        {
+            string dir = Path.Combine(enginePath.value!, exeDir);
+
+            if (!File.Exists(dir))
+                throw new Exception($"Could not find install at the path {dir}");
+
+            return dir;
+        }
+
+        return enginePath.value ?? exeDir;
     }
 
     public static WallpaperOptions.ScreenSettings[] WorkOutScreenOffsets(float offsetX, float offsetY)
@@ -178,6 +200,7 @@ public static class WallpaperEngine
         }
 
         await ConfigManager.SetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper, id.ToString());
+        OnStatusChange?.Invoke();
     }
 
     private static async Task SaveCommandToFile(string command, ProcessStartInfo arguments, string? path)

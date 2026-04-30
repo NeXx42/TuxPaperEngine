@@ -62,6 +62,7 @@ public partial class HomePage : UserControl
 
         await WorkshopManager.RefreshLocalEntries();
         Filters.DrawTags(WorkshopManager.GetAllTags());
+        Filters.EngineStatus.RefreshStatus();
 
         await ItemViewer.Reset();
     }

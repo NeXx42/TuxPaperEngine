@@ -1,16 +1,18 @@
 <UserControl xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="100" x:Class="AvaloniaUI.Pages.Common.FilterContainer">
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="100" x:Class="AvaloniaUI.Pages.Common.FilterContainer"
+  xmlns:Common="clr-namespace:AvaloniaUI.Common">
   <Grid RowDefinitions="* *">
     <Border Background="#050506" BorderThickness="0 0 0 1" BorderBrush="rgb(34, 34, 40)">
-      <StackPanel Orientation="Horizontal">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="20">
         <TextBox Margin="10" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers"/>
+        <Common:Common_EngineStatus x:Name="EngineStatus"/>
       </StackPanel>
     </Border>
 
     <Border Background="#080809" BorderThickness="0 0 0 1" Grid.Row="1" BorderBrush="rgb(34, 34, 40)">
-      <ScrollViewer>
+      <ScrollViewer x:Name="scroll_Tags" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
         <StackPanel Orientation="Horizontal" x:Name="container_tags" Spacing="5" Margin="5 0"/>
       </ScrollViewer>
     </Border>
