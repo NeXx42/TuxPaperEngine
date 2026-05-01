@@ -16,6 +16,7 @@ using CSharpSqliteORM;
 using Logic;
 using Logic.Data;
 using Logic.Database;
+using Logic.Enums;
 
 namespace AvaloniaUI.Pages;
 
@@ -30,7 +31,7 @@ public partial class HomePage : UserControl
     public HomePage()
     {
         InitializeComponent();
-        ItemViewer.Setup(Sidebar.Setup<HomePage_SidePanel>(), Filters, FetchEntries);
+        ItemViewer.Setup(Sidebar.Setup<HomePage_SidePanel>(), Filters, FetchEntries, ["Name", "Download Date", "Last Used"]);
     }
 
     public async void LoadPage(bool force = false)
@@ -51,7 +52,7 @@ public partial class HomePage : UserControl
     {
         return Task.FromResult(new DataFetchResponse()
         {
-            entries = WorkshopManager.GetCachedWallpaperEntries(req.textFilter, req.tags, req.skip, req.take)
+            entries = WorkshopManager.GetCachedWallpaperEntries(req.textFilter, req.tags, req.skip, req.take, (DownloadedWallpaperOrdering)req.orderId)
         });
 
     }

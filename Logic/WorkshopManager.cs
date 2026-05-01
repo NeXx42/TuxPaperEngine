@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Logic.Data;
+using Logic.Enums;
 
 namespace Logic;
 
@@ -81,7 +82,7 @@ public static class WorkshopManager
         }
     }
 
-    public static WorkshopEntry[] GetCachedWallpaperEntries(string? nameSearch, HashSet<string>? tags, int skip, int take)
+    public static WorkshopEntry[] GetCachedWallpaperEntries(string? nameSearch, HashSet<string>? tags, int skip, int take, DownloadedWallpaperOrdering ordering)
     {
         IEnumerable<WorkshopEntry> entries = cachedEntries.Values;
 
@@ -98,7 +99,24 @@ public static class WorkshopManager
         }
 
         filterEntriesCount = entries.Count();
-        return entries.Skip(skip).Take(take).ToArray();
+        IEnumerable<WorkshopEntry> items;
+
+        switch (ordering)
+        {
+            case DownloadedWallpaperOrdering.DownloadDate:
+                items = entries.OrderByDescending(x => x.creationDate);
+                break;
+
+            case DownloadedWallpaperOrdering.LastUsed:
+                items = entries.OrderByDescending(x => x.lastUsed).ThenByDescending(x => x.creationDate);
+                break;
+
+            default:
+                items = entries.OrderBy(x => x.title);
+                break;
+        }
+
+        return items.Skip(skip).Take(take).ToArray();
     }
 
     public static bool TryGetWallpaperEntry(long? id, out WorkshopEntry entry)

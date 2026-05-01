@@ -33,7 +33,12 @@ public partial class App : Application
         {
             if (desktop.Args?.FirstOrDefault() == "--startup")
             {
-                ConfigManager.LoadStartupVersion();
+                long? specificWallpaper = null;
+
+                if (desktop.Args.Length == 2 && long.TryParse(desktop.Args[1], out long id))
+                    specificWallpaper = id;
+
+                ConfigManager.LoadStartupVersion(specificWallpaper);
                 return;
             }
 

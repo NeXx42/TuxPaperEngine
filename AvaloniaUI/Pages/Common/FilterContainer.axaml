@@ -1,14 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="100" x:Class="AvaloniaUI.Pages.Common.FilterContainer"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="150" x:Class="AvaloniaUI.Pages.Common.FilterContainer"
   xmlns:Common="clr-namespace:AvaloniaUI.Common">
-  <Grid RowDefinitions="* *">
+  <Grid RowDefinitions="* * *">
     <Border Background="#050506" BorderThickness="0 0 0 1" BorderBrush="rgb(34, 34, 40)">
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
-        <TextBox Margin="5 0 0 0" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers" Height="35"/>
-        <Common:Common_EngineStatus x:Name="EngineStatus" Height="35"/>
-      </StackPanel>
+      <Grid>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+          <TextBox Margin="5 0 0 0" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers" Height="35"/>
+          <Common:Common_EngineStatus x:Name="EngineStatus" Height="35"/>
+        </StackPanel>
+      </Grid>
     </Border>
 
     <Border Background="#080809" BorderThickness="0 0 0 1" Grid.Row="1" BorderBrush="rgb(34, 34, 40)">
@@ -16,5 +18,40 @@
         <StackPanel Orientation="Horizontal" x:Name="container_tags" Spacing="5" Margin="5 0"/>
       </ScrollViewer>
     </Border>
+
+    <Grid Grid.Row="2">
+      <Grid HorizontalAlignment="Right" Height="25" Margin="0 0 15 0">
+        <Border CornerRadius="8" ClipToBounds="True">
+          <StackPanel Background="rgb(46, 46, 56)" Orientation="Horizontal" Spacing="1" x:Name="cont_Ordering">
+            <StackPanel.Styles>
+              <Style Selector="StackPanel Border">
+                <Setter Property="MinWidth" Value="75"/>
+                <Setter Property="Background" Value="rgb(22, 22, 25)"/>
+              </Style>
+              <Style Selector="StackPanel Border Label">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="10 0"/>
+                <Setter Property="FontSize" Value="12"/>
+              </Style>
+
+              <Style Selector="StackPanel Border.Selected">
+                <Setter Property="Background" Value="rgb(88, 101, 242)"/>
+              </Style>
+            </StackPanel.Styles>
+
+            <Border Classes="Selected">
+              <Label>Name</Label>
+            </Border>
+            <Border>
+              <Label>Download date</Label>
+            </Border>
+            <Border>
+              <Label>Last used</Label>
+            </Border>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Grid>
   </Grid>
 </UserControl>

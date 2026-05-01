@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using HtmlAgilityPack;
 using Logic.Data;
+using Logic.Enums;
 
 namespace Logic;
 
@@ -124,6 +125,15 @@ public static class SteamWorkshopManager
             {
                 sb.Append($"&requiredtags[]={str}");
             }
+
+        sb.Append("&browsesort=");
+        switch ((SteamWallpaperOrdering)filter.orderId)
+        {
+            case SteamWallpaperOrdering.Popular: sb.Append("trend&days=7"); break;
+            case SteamWallpaperOrdering.New: sb.Append("mostrecent"); break;
+            case SteamWallpaperOrdering.LastUpdated: sb.Append("lastupdated"); break;
+            case SteamWallpaperOrdering.MostSubscribed: sb.Append("totaluniquesubscribers"); break;
+        }
 
         sb.Append($"&p={filter.skip}");
         sb.Append("&rss=1");

@@ -9,8 +9,10 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia.Rendering.Composition;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using AvaloniaUI.Pages.Common;
 using AvaloniaUI.Utils;
+using Logic;
 using Logic.Data;
 
 namespace AvaloniaUI.Pages.Common;
@@ -31,6 +33,7 @@ public partial class Common_Wallpaper : UserControl
     public void DrawSkeleton()
     {
         skeleton_Shimmer.IsVisible = true;
+        cont_DownloadStatus.IsVisible = false;
 
         this.representing = null;
 
@@ -44,6 +47,7 @@ public partial class Common_Wallpaper : UserControl
         cancellationToken = new CancellationTokenSource();
 
         await InternalDraw(entry, cancellationToken.Token);
+        RedrawStatus(SteamCMDManager.GetActiveStatus(entry.getId));
 
         async Task InternalDraw(IWorkshopEntry entry, CancellationToken token)
         {
@@ -80,6 +84,36 @@ public partial class Common_Wallpaper : UserControl
         else
         {
             border.Classes.Remove("Selected");
+        }
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        SteamCMDManager.onDownloadChange -= UpdateDownloadStatus;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        SteamCMDManager.onDownloadChange += UpdateDownloadStatus;
+        base.OnAttachedToVisualTree(e);
+    }
+
+    private void UpdateDownloadStatus(long id, DownloadStatus status)
+    {
+        if (id != representing?.getId)
+            return;
+
+        Dispatcher.UIThread.Post(() => RedrawStatus(status));
+    }
+
+    private void RedrawStatus(DownloadStatus? status)
+    {
+        cont_DownloadStatus.IsVisible = (status ?? DownloadStatus.Finished) != DownloadStatus.Finished;
+
+        if (cont_DownloadStatus.IsVisible)
+        {
+            lbl_DownloadStatus.Content = status!.ToString();
         }
     }
 }

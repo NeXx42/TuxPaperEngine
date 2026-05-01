@@ -15,8 +15,11 @@ public partial class Common_EngineStatus : UserControl
     {
         InitializeComponent();
 
-        WallpaperEngine.OnStatusChange += () => _ = RefreshStatus();
-        _ = RefreshStatus();
+        if (!Design.IsDesignMode)
+        {
+            WallpaperEngine.OnStatusChange += () => _ = RefreshStatus();
+            _ = RefreshStatus();
+        }
     }
 
     public async Task RefreshStatus()

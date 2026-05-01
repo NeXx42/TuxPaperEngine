@@ -26,7 +26,6 @@
 
     <Grid IsHitTestVisible="False">
       <Border x:Name="img_Icon" IsHitTestVisible="False">
-
         <Rectangle x:Name="skeleton_Shimmer" Width="100">
           <Rectangle.Fill>
             <LinearGradientBrush StartPoint="0,0" EndPoint="100%,0%">
@@ -58,7 +57,12 @@
       </Border>
 
       <Border VerticalAlignment="Bottom" Height="40" Background="#a9000000" IsHitTestVisible="False">
+
         <Label x:Name="lbl_Title" Content="Test" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" IsHitTestVisible="False"/>
+
+      </Border>
+      <Border Background="#ae000000" x:Name="cont_DownloadStatus">
+        <Label HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="lbl_DownloadStatus">Downloading</Label>
       </Border>
     </Grid>
   </Border>

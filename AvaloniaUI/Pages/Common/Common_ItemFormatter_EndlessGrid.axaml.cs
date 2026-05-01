@@ -62,6 +62,7 @@ public partial class Common_ItemFormatter_EndlessGrid : ItemFormatterBase
             skip = loadedPages * ENTRIES_PER_PAGE,
             take = ENTRIES_PER_PAGE,
 
+            orderId = filter?.GetOrder() ?? 0,
             textFilter = filter?.GetTextFilter(),
             tags = filter?.GetTagFilter(),
         });

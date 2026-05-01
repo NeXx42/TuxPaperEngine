@@ -5,7 +5,7 @@
   xmlns:Common="clr-namespace:AvaloniaUI.Pages.Common"
   xmlns:PageElements="clr-namespace:AvaloniaUI.Pages._HomePage">
   <Grid ColumnDefinitions="* Auto">
-    <Grid RowDefinitions="100 *">
+    <Grid RowDefinitions="150 *">
       <Common:FilterContainer x:Name="Filters"/>
       <ScrollViewer Grid.Row="1">
         <Common:Common_ItemFormatter_EndlessGrid x:Name="ItemViewer"/>

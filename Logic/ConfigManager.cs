@@ -36,7 +36,7 @@ public static class ConfigManager
         }
     }
 
-    public static async void LoadStartupVersion()
+    public static async void LoadStartupVersion(long? specificWallpaper)
     {
         await Init(false);
 
@@ -47,7 +47,7 @@ public static class ConfigManager
             priority = x.screenOrder ?? 0
         }).ToArray();
 
-        await WallpaperEngine.SetWallpaper(null);
+        await WallpaperEngine.SetWallpaper(specificWallpaper);
         Console.WriteLine("Set wallpaper");
 
         Environment.Exit(0);

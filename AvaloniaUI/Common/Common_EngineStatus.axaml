@@ -5,7 +5,7 @@
   <Border Background="rgb(22, 22, 25)" BorderBrush="rgb(46, 46, 56)" BorderThickness="1" CornerRadius="8">
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="5" Margin="10 0">
       <Border CornerRadius="50" Background="Red" Width="8" Height="8" x:Name="inp_Status"/>
-      <Label Content="[Running] wallpaper name" x:Name="lbl_Active"/>
+      <Label Content="asdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasdaasdasdasda" x:Name="lbl_Active" MaxWidth="500" />
     </StackPanel>
   </Border>
 </UserControl>

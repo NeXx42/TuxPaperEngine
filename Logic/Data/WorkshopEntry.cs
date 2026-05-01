@@ -1,4 +1,6 @@
 using System.Text.Json;
+using CSharpSqliteORM;
+using Logic.Database;
 
 namespace Logic.Data;
 
@@ -7,6 +9,7 @@ public class WorkshopEntry : IWorkshopEntry
     public long id;
     public string path;
     public DateTime? creationDate;
+    public DateTime? lastUsed;
 
     public string? iconPath;
     public string? title;
@@ -57,6 +60,16 @@ public class WorkshopEntry : IWorkshopEntry
         title = doc.RootElement.GetProperty("title").GetString();
         iconPath = doc.RootElement.GetProperty("preview").GetString();
         tags = doc.RootElement.GetProperty("tags").Deserialize<string[]>();
+
+        dbo_WallpaperSettings? lastUsedConfig = await Database_Manager.GetItem<dbo_WallpaperSettings>(
+            SQLFilter.Equal(nameof(dbo_WallpaperSettings.wallpaperId), id).
+                    Equal(nameof(dbo_WallpaperSettings.settingKey), DefaultProps.DefaultSetting_LastUsedDate.ToString())
+        );
+
+        if (lastUsedConfig != null && DateTime.TryParse(lastUsedConfig.settingValue, out DateTime lastUsed))
+        {
+            this.lastUsed = lastUsed;
+        }
 
         return true;
     }

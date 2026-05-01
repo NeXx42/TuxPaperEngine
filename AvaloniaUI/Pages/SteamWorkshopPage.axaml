@@ -4,7 +4,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.SteamWorkshopPage"
   xmlns:Common="clr-namespace:AvaloniaUI.Pages.Common">
   <Grid ColumnDefinitions="* Auto">
-    <Grid RowDefinitions="100 *">
+    <Grid RowDefinitions="150 *">
       <Common:FilterContainer x:Name="Filters"/>
       <ScrollViewer Grid.Row="1">
         <Common:Common_ItemFormatter_Paginated x:Name="ItemViewer"/>

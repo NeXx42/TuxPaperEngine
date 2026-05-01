@@ -28,6 +28,8 @@ public enum DefaultProps
     DefaultProp_MouseInteraction,
     DefaultProp_Parallax,
     DefaultProp_PauseOnFullscreen,
+
+    DefaultSetting_LastUsedDate
 }
 
 public static class WallpaperEngine
@@ -192,15 +194,29 @@ public static class WallpaperEngine
         p.StartInfo = info;
         p.Start();
 
-        dbo_Config? saveScriptLocation = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.SaveStartupScriptLocation);
-
-        if (saveScriptLocation != null)
+        // this isnt initialized when running as a startup
+        if (WorkshopManager.TryGetWallpaperEntry(id, out WorkshopEntry wallpaperObj))
         {
-            await SaveCommandToFile(command, info, saveScriptLocation.value);
+            dbo_Config? saveScriptLocation = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.SaveStartupScriptLocation);
+
+            if (saveScriptLocation != null)
+            {
+                await SaveCommandToFile(command, info, saveScriptLocation.value);
+            }
+
+            await ConfigManager.SetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper, id.ToString());
+            await Database_Manager.AddOrUpdate(new dbo_WallpaperSettings()
+            {
+                wallpaperId = id.Value,
+                settingKey = DefaultProps.DefaultSetting_LastUsedDate.ToString(),
+                settingValue = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")
+            }, SQLFilter.Equal(nameof(dbo_WallpaperSettings.wallpaperId), id).Equal(nameof(dbo_WallpaperSettings.settingKey), DefaultProps.DefaultSetting_LastUsedDate.ToString()), nameof(dbo_WallpaperSettings.settingValue));
+
+            wallpaperObj.lastUsed = DateTime.UtcNow;
         }
 
-        await ConfigManager.SetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper, id.ToString());
         OnStatusChange?.Invoke();
+
     }
 
     private static async Task SaveCommandToFile(string command, ProcessStartInfo arguments, string? path)

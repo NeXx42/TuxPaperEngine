@@ -15,14 +15,14 @@ public abstract class ItemFormatterBase : UserControl
 
     public abstract long? currentlySelectedWallpaper { get; set; }
 
-    public virtual void Setup(Common_Sidebar sidebar, IFilterHandler filter, Func<DataFetchRequest, Task<DataFetchResponse>> dataFetcher)
+    public virtual void Setup(Common_Sidebar sidebar, IFilterHandler filter, Func<DataFetchRequest, Task<DataFetchResponse>> dataFetcher, params string[] ordering)
     {
         this.dataFetcher = dataFetcher;
 
         this.filter = filter;
         this.sidebar = sidebar;
 
-        filter?.Bind(() => Draw(false, true));
+        filter?.Bind(() => Draw(false, true), ordering);
     }
 
     public abstract Task Reset();

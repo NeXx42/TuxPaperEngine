@@ -23,7 +23,7 @@ public partial class SteamWorkshopPage : UserControl
     public SteamWorkshopPage()
     {
         InitializeComponent();
-        ItemViewer.Setup(Sidebar.Setup<SteamWorkshopPage_Sidebar>(), Filters, FetchEntries);
+        ItemViewer.Setup(Sidebar.Setup<SteamWorkshopPage_Sidebar>(), Filters, FetchEntries, "Trending", "New", "Last Updated", "Most Subscribed");
     }
 
     public async void LoadPage()

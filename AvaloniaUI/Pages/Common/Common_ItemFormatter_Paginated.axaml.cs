@@ -87,6 +87,7 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
             skip = currentPage,
             take = ENTRIES_PER_PAGE,
 
+            orderId = filter?.GetOrder() ?? 0,
             textFilter = filter?.GetTextFilter(),
             tags = filter?.GetTagFilter()
         });
