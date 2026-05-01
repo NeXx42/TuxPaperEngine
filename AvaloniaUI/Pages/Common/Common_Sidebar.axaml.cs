@@ -11,15 +11,12 @@ namespace AvaloniaUI.Pages.Common;
 
 public interface ISidebarContent
 {
-    public Task OnSelectWallpaper(IWorkshopEntry entry);
+    public Task OnSelectWallpaper(Common_Sidebar master, IWorkshopEntry? entry);
 }
 
 public partial class Common_Sidebar : UserControl
 {
     private ISidebarContent? content;
-
-    private long? representing;
-    private string defaultActLabel;
 
     public struct ActVars
     {
@@ -31,45 +28,22 @@ public partial class Common_Sidebar : UserControl
     {
         InitializeComponent();
 
-        SteamCMDManager.onDownloadChange += UpdateDownloadStatus;
+        //SteamCMDManager.onDownloadChange += UpdateDownloadStatus;
         _ = Draw(null);
     }
 
-    public Common_Sidebar Setup(ActVars mainAct, params ActVars[] subActs)
-    {
-        btn_Act2.IsVisible = false;
-        btn_Act3.IsVisible = false;
-
-        defaultActLabel = mainAct.label;
-        btn_Act.RegisterClick(mainAct.callback);
-
-        if (subActs.Length >= 1)
-        {
-            btn_Act2.IsVisible = true;
-            btn_Act2.Label = subActs[0].label;
-            btn_Act2.RegisterClick(subActs[0].callback);
-        }
-
-        if (subActs.Length >= 2)
-        {
-            btn_Act3.IsVisible = true;
-            btn_Act3.Label = subActs[1].label;
-            btn_Act3.RegisterClick(subActs[1].callback);
-        }
-
-        return this;
-    }
-
-    public T AddSubContainer<T>() where T : UserControl, ISidebarContent
+    public Common_Sidebar Setup<T>() where T : Control, ISidebarContent
     {
         T control = Activator.CreateInstance<T>();
 
         content = control;
         container.Children.Add(control);
 
-        return control;
-    }
+        btn_Act2.IsVisible = false;
+        btn_Act3.IsVisible = false;
 
+        return this;
+    }
     public void Open()
     {
         scroll_Content.ScrollToHome();
@@ -81,17 +55,11 @@ public partial class Common_Sidebar : UserControl
     {
         if (entry == null)
         {
-            representing = null;
-
             cont_NoContent.IsVisible = true;
             cont_Content.IsVisible = false;
 
             return;
         }
-
-        representing = entry.getId;
-
-        btn_Act.Label = SteamCMDManager.IsBeingDownloaded(representing.Value) ? "Downloading" : defaultActLabel;
 
         cont_NoContent.IsVisible = false;
         cont_Content.IsVisible = true;
@@ -100,7 +68,7 @@ public partial class Common_Sidebar : UserControl
         img_SidePanel_Icon.Background = await ImageFetcher.GetIcon(entry!);
         DrawTags(entry.getTags);
 
-        await (content?.OnSelectWallpaper(entry) ?? Task.CompletedTask);
+        await (content?.OnSelectWallpaper(this, entry) ?? Task.CompletedTask);
     }
 
     private void DrawTags(string[]? tags)
@@ -117,13 +85,5 @@ public partial class Common_Sidebar : UserControl
 
             container_Tags.Children.Add(tagUI);
         }
-    }
-
-    private void UpdateDownloadStatus(long id, DownloadStatus status)
-    {
-        if (representing != id)
-            return;
-
-        btn_Act.Label = status.ToString();
     }
 }

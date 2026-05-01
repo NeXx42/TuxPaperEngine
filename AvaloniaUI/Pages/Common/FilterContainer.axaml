@@ -5,9 +5,9 @@
   xmlns:Common="clr-namespace:AvaloniaUI.Common">
   <Grid RowDefinitions="* *">
     <Border Background="#050506" BorderThickness="0 0 0 1" BorderBrush="rgb(34, 34, 40)">
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="20">
-        <TextBox Margin="10" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers"/>
-        <Common:Common_EngineStatus x:Name="EngineStatus"/>
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+        <TextBox Margin="5 0 0 0" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers" Height="35"/>
+        <Common:Common_EngineStatus x:Name="EngineStatus" Height="35"/>
       </StackPanel>
     </Border>
 

@@ -101,6 +101,16 @@ public static class WorkshopManager
         return entries.Skip(skip).Take(take).ToArray();
     }
 
-    public static bool TryGetWallpaperEntry(long id, out WorkshopEntry? entry)
-        => cachedEntries.TryGetValue(id, out entry);
+    public static bool TryGetWallpaperEntry(long? id, out WorkshopEntry entry)
+    {
+        if (!id.HasValue)
+        {
+            entry = null!;
+            return false;
+        }
+
+#pragma warning disable CS8601 // Possible null reference assignment.
+        return cachedEntries.TryGetValue(id.Value, out entry) && entry != null;
+#pragma warning restore CS8601 // Possible null reference assignment.
+    }
 }

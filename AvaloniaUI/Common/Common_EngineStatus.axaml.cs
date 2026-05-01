@@ -43,18 +43,18 @@ public partial class Common_EngineStatus : UserControl
 
             if (string.IsNullOrEmpty(activeWallpaper))
             {
-                lbl_Active.Content = "[Idle]";
+                lbl_Active.Content = "";
                 inp_Status.Background = new SolidColorBrush(Color.Parse("#F2C94C"));
             }
             else
             {
-                lbl_Active.Content = $"[Running] {activeWallpaper}";
+                lbl_Active.Content = activeWallpaper;
                 inp_Status.Background = new SolidColorBrush(Color.Parse("#27AE60"));
             }
         }
         catch
         {
-            lbl_Active.Content = "[No engine]";
+            lbl_Active.Content = "No engine installed";
             inp_Status.Background = new SolidColorBrush(Color.Parse("#EB5757"));
         }
     }

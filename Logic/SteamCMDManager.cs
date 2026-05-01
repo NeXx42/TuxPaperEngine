@@ -26,56 +26,79 @@ public static class SteamCMDManager
     private static SemaphoreSlim downloadLock = new SemaphoreSlim(1);
 
     private static Session? activeSession;
-    private static HashSet<long> activeDownloads = new HashSet<long>();
+    private static Dictionary<long, DownloadStatus> activeDownloads = new Dictionary<long, DownloadStatus>();
 
-    public static bool IsBeingDownloaded(long id) => activeDownloads.Contains(id);
+    private static Thread? downloadThread;
 
+    public static DownloadStatus? GetActiveStatus(long id) => activeDownloads.TryGetValue(id, out DownloadStatus status) ? status : null;
     public static Action<long, DownloadStatus>? onDownloadChange;
+
 
     public static async Task DownloadAsset(long assetId, IAuthenticationModal authentication)
     {
-        if (activeDownloads.Contains(assetId))
+        if (activeDownloads.ContainsKey(assetId))
             return;
 
         onDownloadChange?.Invoke(assetId, DownloadStatus.Waiting);
+        activeDownloads.Add(assetId, DownloadStatus.Waiting);
 
-        activeDownloads.Add(assetId);
-        await downloadLock.WaitAsync();
-
-        try
+        if (downloadThread == null)
         {
-            if (activeSession == null)
+            downloadThread = new Thread(() => _ = SteamCMDThread(authentication));
+            downloadThread.Start();
+        }
+    }
+
+    private static async Task SteamCMDThread(IAuthenticationModal authentication)
+    {
+        while (true)
+        {
+            if (activeDownloads.Count == 0)
             {
-                activeSession = await HandleSteamCMDAuthentication(authentication);
+                await Task.Delay(100);
+                continue;
             }
 
-            if (activeSession != null)
+            long assetId = activeDownloads.Keys.First();
+            await downloadLock.WaitAsync();
+
+            try
             {
-                onDownloadChange?.Invoke(assetId, DownloadStatus.Downloading);
-
-                await activeSession.SendCommand($"workshop_download_item {ConfigManager.WALLPAPER_ENGINE_ID} {assetId}");
-
-                if (await activeSession.WaitForResponse($"Downloaded item {assetId}", 5 * 10_000))
+                if (activeSession == null)
                 {
-                    onDownloadChange?.Invoke(assetId, DownloadStatus.Finished);
+                    activeSession = await HandleSteamCMDAuthentication(authentication);
                 }
-                else
+
+                if (activeSession != null)
                 {
-                    throw new Exception($"Gave up on waiting for the download of {assetId}");
+                    onDownloadChange?.Invoke(assetId, DownloadStatus.Downloading);
+                    activeDownloads[assetId] = DownloadStatus.Downloading;
+
+                    await activeSession.SendCommand($"workshop_download_item {ConfigManager.WALLPAPER_ENGINE_ID} {assetId}");
+
+                    if (await activeSession.WaitForResponse($"Downloaded item {assetId}", 5 * 10_000))
+                    {
+                        onDownloadChange?.Invoke(assetId, DownloadStatus.Finished);
+                        activeDownloads[assetId] = DownloadStatus.Finished;
+                    }
+                    else
+                    {
+                        throw new Exception($"Gave up on waiting for the download of {assetId}");
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                onDownloadChange?.Invoke(assetId, DownloadStatus.Failed);
+                activeDownloads[assetId] = DownloadStatus.Failed;
+            }
+            finally
+            {
+                activeDownloads.Remove(assetId);
+                downloadLock.Release();
+            }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            onDownloadChange?.Invoke(assetId, DownloadStatus.Failed);
-        }
-        finally
-        {
-            activeDownloads.Remove(assetId);
-            downloadLock.Release();
-        }
-
     }
 
     private static async Task<Session?> HandleSteamCMDAuthentication(IAuthenticationModal authentication)

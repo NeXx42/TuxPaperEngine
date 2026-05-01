@@ -104,7 +104,7 @@ public static class SteamWorkshopManager
     private static async Task RecacheFilters(HtmlDocument doc)
     {
         HtmlNodeCollection allTags = doc.DocumentNode.SelectNodes("//input[@class='inputTagsFilter']");
-        tags = allTags.Select(x => x?.GetAttributeValue("value", "")!).ToArray();
+        tags = allTags.Select(x => x?.GetAttributeValue("value", "")!).Order().ToArray();
 
         resolutions = [];
     }

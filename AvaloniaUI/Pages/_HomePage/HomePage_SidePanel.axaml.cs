@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using AvaloniaUI.Pages._HomePage.WallpaperProperties;
 using AvaloniaUI.Pages.Common;
+using CSharpSqliteORM;
 using Logic;
 using Logic.Data;
 using Logic.Database;
@@ -17,6 +19,9 @@ namespace AvaloniaUI.Pages._HomePage;
 
 public partial class HomePage_SidePanel : UserControl, ISidebarContent
 {
+    private Common_Sidebar? master;
+    private IWorkshopEntry? selected;
+
     private readonly IWallpaperProperty[] defaultProps;
     private List<IWallpaperProperty> customProps;
 
@@ -47,8 +52,25 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
         customProps = new List<IWallpaperProperty>();
     }
 
-    public async Task OnSelectWallpaper(IWorkshopEntry iEntry)
+    public async Task OnSelectWallpaper(Common_Sidebar master, IWorkshopEntry? iEntry)
     {
+        selected = iEntry;
+        this.master = master;
+
+        master.btn_Act.Label = "Apply Wallpaper";
+        master.btn_Act.ClearCallback();
+        master.btn_Act.RegisterClick(SetWallpaper);
+
+        master.btn_Act2.Label = "Browse";
+        master.btn_Act2.ClearCallback();
+        master.btn_Act2.IsVisible = true;
+        master.btn_Act2.RegisterClick(BrowseToFolder);
+
+        master.btn_Act3.Label = "Reset";
+        master.btn_Act3.ClearCallback();
+        master.btn_Act3.IsVisible = true;
+        master.btn_Act3.RegisterClick(ResetWallpaperOptions);
+
         if (iEntry is not WorkshopEntry entry)
             return;
 
@@ -132,28 +154,39 @@ public partial class HomePage_SidePanel : UserControl, ISidebarContent
 
         return null;
     }
-    /*
-        public WallpaperSetter.WallpaperOptions GetWallpaperOptions()
-        {
-            WallpaperSetter.WallpaperOptions options = new WallpaperSetter.WallpaperOptions();
-            options.scalingOption = prop_Scaling.SelectedIndex - 1 >= 0 ? (WallpaperSetter.ScalingOptions)(prop_Scaling.SelectedIndex - 1) : null;
-            options.clampOptions = (WallpaperSetter.ClampOptions)prop_Clamp.SelectedIndex;
 
-            options.contrast = 0.5f + (prop_Contrast.Value / 60) * 1.5f;
-            options.saturation = prop_Saturation.Value / 60f * 1.4f;
-            options.borderColour = prop_BGColour.StringColour;
-
-            options.screens = WallpaperSetter.WorkOutScreenOffsets(-(float)prop_OffsetX.Value, -(float)prop_OffsetY.Value);
-            options.customProperties = customProps?.Select(x => x.CreateArgument()).Where(x => !string.IsNullOrEmpty(x)).Select(x => x!).ToArray();
-
-            return options;
-        }
-    */
     public async Task SaveWallpaperOptions(long id)
     {
         List<dbo_WallpaperSettings> props = defaultProps!.Select(x => x.Save(id)).Where(x => x != null).ToList()!;
         props.AddRange(customProps.Select(x => x.Save(id)).Where(x => x != null)!);
 
         await ConfigManager.SetWallpaperSavedSettings(id, props.ToArray());
+    }
+
+    private async Task SetWallpaper()
+    {
+        if (selected == null)
+            return;
+
+        await SaveWallpaperOptions(selected.getId);
+        await WallpaperEngine.SetWallpaper(selected.getId);
+    }
+
+    private Task BrowseToFolder()
+    {
+        if (!WorkshopManager.TryGetWallpaperEntry(selected?.getId, out WorkshopEntry entry))
+            return Task.CompletedTask;
+
+        new Process() { StartInfo = new ProcessStartInfo { FileName = "xdg-open", Arguments = entry.path, UseShellExecute = false } }.Start();
+        return Task.CompletedTask;
+    }
+
+    private async Task ResetWallpaperOptions()
+    {
+        if (selected == null)
+            return;
+
+        await Database_Manager.Delete<dbo_WallpaperSettings>(SQLFilter.Equal(nameof(dbo_WallpaperSettings.wallpaperId), selected.getId));
+        await (master?.Draw(selected) ?? Task.CompletedTask);
     }
 }

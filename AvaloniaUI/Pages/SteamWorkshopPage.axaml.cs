@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using AvaloniaUI.Pages._WorkshopPage;
 using AvaloniaUI.Pages.Common;
 using AvaloniaUI.Utils;
 using Logic;
@@ -22,18 +23,7 @@ public partial class SteamWorkshopPage : UserControl
     public SteamWorkshopPage()
     {
         InitializeComponent();
-        ItemViewer.Setup(Sidebar.Setup(
-            new Common_Sidebar.ActVars
-            {
-                label = "Download Wallpaper",
-                callback = DownloadWallpaper
-            },
-            new Common_Sidebar.ActVars
-            {
-                label = "Browse",
-                callback = BrowseToWallpaper
-            }
-        ), Filters, FetchEntries);
+        ItemViewer.Setup(Sidebar.Setup<SteamWorkshopPage_Sidebar>(), Filters, FetchEntries);
     }
 
     public async void LoadPage()
@@ -60,26 +50,5 @@ public partial class SteamWorkshopPage : UserControl
         }
 
         return await SteamWorkshopManager.FetchItems(req, false);
-    }
-
-
-    private async Task DownloadWallpaper()
-    {
-        if (!ItemViewer.currentlySelectedWallpaper.HasValue)
-            return;
-
-        await SteamCMDManager.DownloadAsset(ItemViewer.currentlySelectedWallpaper.Value, MainWindow.getAuthenticationModal);
-    }
-
-    private async Task BrowseToWallpaper()
-    {
-        if (!ItemViewer.currentlySelectedWallpaper.HasValue)
-            return;
-
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = $"https://steamcommunity.com/sharedfiles/filedetails/?id={ItemViewer.currentlySelectedWallpaper.Value}",
-            UseShellExecute = true
-        });
     }
 }
