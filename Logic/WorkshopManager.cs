@@ -12,8 +12,9 @@ public static class WorkshopManager
 
     public static string[] GetAllTags()
     {
-        HashSet<string> existingTags = new HashSet<string>();
+        SteamCMDManager.onDownloadChange += (a, b) => _ = OnSteamDownloadComplete(a, b);
 
+        HashSet<string> existingTags = new HashSet<string>();
 
         foreach (var entry in cachedEntries.Values)
         {
@@ -55,6 +56,29 @@ public static class WorkshopManager
 
             cachedEntries.TryAdd(wallpaperId, entry);
         });
+    }
+
+    public static async Task OnSteamDownloadComplete(long id, DownloadStatus status)
+    {
+        if (status != DownloadStatus.Finished)
+            return;
+
+        foreach (string root in ConfigManager.localWorkshopLocations!)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            string path = Path.Combine(root, id.ToString());
+
+            if (!Directory.Exists(path))
+                continue;
+
+            DirectoryInfo dir = new DirectoryInfo(path);
+            WorkshopEntry entry = new WorkshopEntry(id, dir.FullName, dir.CreationTimeUtc);
+            await entry.DecodeBasic();
+
+            cachedEntries.TryAdd(id, entry);
+        }
     }
 
     public static WorkshopEntry[] GetCachedWallpaperEntries(string? nameSearch, HashSet<string>? tags, int skip, int take)

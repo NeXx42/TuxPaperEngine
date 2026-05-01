@@ -37,6 +37,8 @@ public static class SteamCMDManager
         if (activeDownloads.Contains(assetId))
             return;
 
+        onDownloadChange?.Invoke(assetId, DownloadStatus.Waiting);
+
         activeDownloads.Add(assetId);
         await downloadLock.WaitAsync();
 
@@ -53,7 +55,7 @@ public static class SteamCMDManager
 
                 await activeSession.SendCommand($"workshop_download_item {ConfigManager.WALLPAPER_ENGINE_ID} {assetId}");
 
-                if (await activeSession.WaitForResponse($"Downloaded item {assetId}"))
+                if (await activeSession.WaitForResponse($"Downloaded item {assetId}", 5 * 10_000))
                 {
                     onDownloadChange?.Invoke(assetId, DownloadStatus.Finished);
                 }
@@ -157,7 +159,7 @@ public static class SteamCMDManager
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "/home/matth/Steam/steamcmd.sh",
+                    FileName = "steamcmd",
 
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
