@@ -17,6 +17,7 @@ public interface IFilterHandler
 
 public partial class FilterContainer : UserControl, IFilterHandler
 {
+    private bool inInit;
     private Action? refilterRequest;
 
     private Common_Tag[]? tagsUI;
@@ -39,7 +40,7 @@ public partial class FilterContainer : UserControl, IFilterHandler
                     orderBorders?[i]?.Classes.Add("Selected");
             }
 
-            refilterRequest?.Invoke();
+            RequestRefresh();
         }
         get => m_currentOrderBy;
     }
@@ -47,6 +48,7 @@ public partial class FilterContainer : UserControl, IFilterHandler
 
     public FilterContainer()
     {
+        inInit = true;
         InitializeComponent();
 
         inp_TxtFilter.KeyUp += (_, __) => refilterRequest?.Invoke();
@@ -77,10 +79,12 @@ public partial class FilterContainer : UserControl, IFilterHandler
         }
 
         currentOrderBy = 0;
+        inInit = false;
     }
 
     public void DrawTags(string[] tags)
     {
+        inInit = true;
         tagsUI = new Common_Tag[tags.Length];
 
         for (int i = 0; i < tags.Length; i++)
@@ -89,14 +93,24 @@ public partial class FilterContainer : UserControl, IFilterHandler
             {
                 Height = 26
             };
-            ui.Draw(tags[i], false, () => refilterRequest?.Invoke());
+            ui.Draw(tags[i], false, RequestRefresh);
 
             container_tags.Children.Add(ui);
             tagsUI[i] = ui;
         }
+
+        inInit = false;
     }
 
     public int GetOrder() => currentOrderBy;
     public string? GetTextFilter() => inp_TxtFilter.Text;
     public HashSet<string> GetTagFilter() => tagsUI?.Where(x => x.isSelected).Select(x => x.tag ?? string.Empty).ToHashSet() ?? new HashSet<string>();
+
+    private void RequestRefresh()
+    {
+        if (inInit)
+            return;
+
+        refilterRequest?.Invoke();
+    }
 }

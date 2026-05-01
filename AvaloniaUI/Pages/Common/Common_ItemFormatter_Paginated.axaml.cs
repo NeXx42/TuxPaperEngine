@@ -68,6 +68,8 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
 
     public override async Task Draw(bool additive, bool resetPaging)
     {
+        m_currentlySelectedWallpaper = null;
+
         if (resetPaging)
         {
             currentPage = 0;
