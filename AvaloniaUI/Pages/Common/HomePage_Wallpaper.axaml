@@ -2,7 +2,28 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200" x:Class="AvaloniaUI.Pages.Common.Common_Wallpaper">
-  <Border Background="Black" CornerRadius="5" ClipToBounds="True" x:Name="border">
+
+
+  <Border Background="Black" x:Name="border" CornerRadius="5" ClipToBounds="True" BorderThickness="2">
+    <Border.Styles>
+      <Style Selector="Border:pointerover">
+        <Setter Property="BorderBrush" Value="Black"/>
+      </Style>
+      <Style Selector="Border:pointerover">
+        <Setter Property="RenderTransform" Value="scale(1.02)"/>
+      </Style>
+      <Style Selector="Border.Selected">
+        <Setter Property="RenderTransform" Value="scale(1)"/>
+        <Setter Property="BorderBrush" Value="rgb(88, 101, 242)"/>
+      </Style>
+    </Border.Styles>
+    <Border.Transitions>
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2"/>
+      </Transitions>
+    </Border.Transitions>
+
     <Grid IsHitTestVisible="False">
       <Border x:Name="img_Icon" IsHitTestVisible="False">
 

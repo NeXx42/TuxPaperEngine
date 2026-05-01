@@ -17,10 +17,6 @@ namespace AvaloniaUI.Pages.Common;
 
 public partial class Common_Wallpaper : UserControl
 {
-    private static Thickness? unselectedThickness;
-    private static Thickness? selectedThickness;
-    private static ImmutableSolidColorBrush? selectedBrush;
-
     private CancellationTokenSource? cancellationToken;
 
     private IWorkshopEntry? representing;
@@ -77,11 +73,13 @@ public partial class Common_Wallpaper : UserControl
 
     public void ToggleSelection(bool to)
     {
-        unselectedThickness ??= new Thickness(0);
-        selectedThickness ??= new Thickness(2);
-        selectedBrush ??= new ImmutableSolidColorBrush(Color.FromRgb(88, 101, 242));
-
-        border.BorderThickness = to ? selectedThickness.Value : unselectedThickness.Value;
-        border.BorderBrush = to ? selectedBrush : null;
+        if (to)
+        {
+            border.Classes.Add("Selected");
+        }
+        else
+        {
+            border.Classes.Remove("Selected");
+        }
     }
 }
