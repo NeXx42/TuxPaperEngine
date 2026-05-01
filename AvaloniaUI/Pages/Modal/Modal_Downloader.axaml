@@ -17,7 +17,7 @@
 
       <StackPanel Grid.Row="1" Spacing="10" VerticalAlignment="Center" x:Name="cont_Options" IsVisible="false">
         <ComboBox HorizontalAlignment="Stretch" Height="35" x:Name="inp_GitProject"/>
-        <Common:Common_Button Label="Install Location" Height="35" x:Name="inp_Dir"/>
+        <Common:Common_Button Label="Select Install Location" Height="35" x:Name="inp_Dir"/>
         <TextBlock FontSize="10" Foreground="#FFC107">
           <Run Text="The Upstream may contain options not available within the UI."/>
           <LineBreak/>

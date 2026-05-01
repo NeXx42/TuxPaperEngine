@@ -1,6 +1,17 @@
 OUTPUT_DIR = ./Build/Output/
 PROGRAM_NAME = TuxPaperEngine
 
+build:
+	rm -rf ${OUTPUT_DIR}/*
+	
+	mkdir -p ${OUTPUT_DIR}/${PROGRAM_NAME}
+	dotnet publish AvaloniaUI/AvaloniaUI.csproj \
+		-c Release \
+		-r linux-x64 \
+		--self-contained true \
+		/p:PublishSingleFile=false \
+		-o ${OUTPUT_DIR}/${PROGRAM_NAME}
+
 publish:
 	rm -rf ${OUTPUT_DIR}/*
 	
