@@ -14,6 +14,7 @@ namespace AvaloniaUI.Common
     public partial class Common_Button : UserControl
     {
         private Action? callback;
+        private bool doNotUpdateLabelOnTaskFinish = false;
 
         public Common_Button()
         {
@@ -32,6 +33,12 @@ namespace AvaloniaUI.Common
             set => SetValue(LabelProperty, value);
         }
 
+        public void OverwriteLabel(string to)
+        {
+            doNotUpdateLabelOnTaskFinish = true;
+            Label = to;
+        }
+
         public void ClearCallback() => callback = null;
 
         public void RegisterClick(Func<Task> callback, string? activeLabel = null)
@@ -44,12 +51,15 @@ namespace AvaloniaUI.Common
                     return;
                 }
 
+                doNotUpdateLabelOnTaskFinish = false;
+
                 string temp = Label;
                 Label = activeLabel;
 
                 await callback();
 
-                Label = temp;
+                if (!doNotUpdateLabelOnTaskFinish)
+                    Label = temp;
             };
         }
 

@@ -34,7 +34,23 @@ public enum DefaultProps
 
 public static class WallpaperEngine
 {
-    public static Action? OnStatusChange;
+    private static long? activeWallpaper;
+
+    public static Action? OnEngineStatusChange;
+    public static Action<long?>? OnActiveWallpaperChange;
+
+    public static long? getActiveWallpaper => activeWallpaper;
+
+    public static async Task Init(bool fullLoad)
+    {
+        if (fullLoad)
+        {
+            dbo_Config? config = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper);
+
+            if (config?.value != null && long.TryParse(config?.value, out long id))
+                activeWallpaper = id;
+        }
+    }
 
     public static async Task InstallEngineLocally(string fork, string path, IProgress<int> progress, IProgress<int> taskProgress, Action<string> console)
     {
@@ -72,7 +88,7 @@ public static class WallpaperEngine
             value = ((int)EngineType.Directory).ToString()
         }, SQLFilter.Equal(nameof(dbo_Config.key), ConfigManager.ConfigKeys.ExecutableType.ToString()));
 
-        OnStatusChange?.Invoke();
+        OnEngineStatusChange?.Invoke();
 
         async Task RunCommand(string workingDir, string command, params string[] args)
         {
@@ -197,6 +213,9 @@ public static class WallpaperEngine
         // this isnt initialized when running as a startup
         if (WorkshopManager.TryGetWallpaperEntry(id, out WorkshopEntry wallpaperObj))
         {
+            activeWallpaper = id;
+            OnActiveWallpaperChange?.Invoke(id);
+
             dbo_Config? saveScriptLocation = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.SaveStartupScriptLocation);
 
             if (saveScriptLocation != null)
@@ -214,8 +233,6 @@ public static class WallpaperEngine
 
             wallpaperObj.lastUsed = DateTime.UtcNow;
         }
-
-        OnStatusChange?.Invoke();
 
     }
 

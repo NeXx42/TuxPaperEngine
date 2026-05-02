@@ -61,7 +61,7 @@ public partial class SteamWorkshopPage_Sidebar : UserControl, ISidebarContent
         if (selected == null)
             return;
 
-        await SteamCMDManager.DownloadAsset(selected.getId, MainWindow.getAuthenticationModal);
+        await SteamCMDManager.DownloadAsset(selected.getId);
     }
 
     private async Task BrowseToWallpaper()

@@ -1,16 +1,28 @@
+using System.Data.SQLite;
 using System.Diagnostics;
+using System.Security.Authentication;
 using System.Text;
+using CSharpSqliteORM;
+using Logic.Interfaces;
 
 namespace Logic;
 
 public interface IAuthenticationModal
 {
-    public Task Open();
-
-    public Task<string> GetPassword();
-    public Task SetMessage(string to);
+    public Task<(string usr, string pass)> GetCredentials();
+    public Task UpdateMessage(string to, bool isError);
+    public Task UpdateStatus(AuthenticationStatus to);
 
     public Task Complete();
+}
+
+public enum AuthenticationStatus
+{
+    Login,
+    LoggingIn,
+    WaitingForGuard,
+    Success,
+    Fail
 }
 
 public enum DownloadStatus
@@ -23,6 +35,7 @@ public enum DownloadStatus
 
 public static class SteamCMDManager
 {
+    private static bool isTryingToAuthenticate;
     private static SemaphoreSlim downloadLock = new SemaphoreSlim(1);
 
     private static Session? activeSession;
@@ -34,7 +47,7 @@ public static class SteamCMDManager
     public static Action<long, DownloadStatus>? onDownloadChange;
 
 
-    public static async Task DownloadAsset(long assetId, IAuthenticationModal authentication)
+    public static async Task DownloadAsset(long assetId)
     {
         if (activeDownloads.ContainsKey(assetId))
             return;
@@ -44,12 +57,26 @@ public static class SteamCMDManager
 
         if (downloadThread == null)
         {
-            downloadThread = new Thread(() => _ = SteamCMDThread(authentication));
+            downloadThread = new Thread(() => _ = SteamCMDThread());
             downloadThread.Start();
         }
     }
 
-    private static async Task SteamCMDThread(IAuthenticationModal authentication)
+    public static async Task<bool> TryToAuthenticate()
+    {
+        if (activeSession != null)
+            return true;
+
+        if (downloadThread == null)
+        {
+            downloadThread = new Thread(() => _ = SteamCMDThread());
+            downloadThread.Start();
+        }
+
+        return await HandleSteamCMDAuthentication();
+    }
+
+    private static async Task SteamCMDThread()
     {
         while (true)
         {
@@ -64,19 +91,17 @@ public static class SteamCMDManager
 
             try
             {
-                if (activeSession == null)
-                {
-                    activeSession = await HandleSteamCMDAuthentication(authentication);
-                }
+                if (!await HandleSteamCMDAuthentication())
+                    throw new AuthenticationException("Failed to authenticate with SteamCMD");
 
                 if (activeSession != null)
                 {
                     onDownloadChange?.Invoke(assetId, DownloadStatus.Downloading);
                     activeDownloads[assetId] = DownloadStatus.Downloading;
 
-                    await activeSession.SendCommand($"workshop_download_item {ConfigManager.WALLPAPER_ENGINE_ID} {assetId}");
+                    string response = await activeSession.SendAsync($"workshop_download_item {ConfigManager.WALLPAPER_ENGINE_ID} {assetId}");
 
-                    if (await activeSession.WaitForResponse($"Downloaded item {assetId}", 5 * 10_000))
+                    if (response.Contains($"Downloaded item {assetId}"))
                     {
                         onDownloadChange?.Invoke(assetId, DownloadStatus.Finished);
                         activeDownloads[assetId] = DownloadStatus.Finished;
@@ -101,169 +126,203 @@ public static class SteamCMDManager
         }
     }
 
-    private static async Task<Session?> HandleSteamCMDAuthentication(IAuthenticationModal authentication)
+    private static async Task<bool> HandleSteamCMDAuthentication()
     {
+        if (isTryingToAuthenticate)
+            return false;
+
+        isTryingToAuthenticate = true;
+
+        if (activeSession != null)
+            return true;
+
+        IAuthenticationModal? authenticationModal = null;
+
         string? username = (await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.SteamUsername))?.value;
+        string? password = string.Empty;
 
-        if (string.IsNullOrEmpty(username))
+        try
         {
-            throw new Exception("No username set");
-        }
+            if (string.IsNullOrEmpty(username))
+                await GetCredentials();
 
-        Session session = new Session();
-        await session.SendCommand($"login {username}");
+            Session session = new Session(Path.Combine(AppContext.BaseDirectory, "steamcmd_bridge"));
+            string response;
 
-        if (await session.WaitForResponse("password:", 10000))
-        {
-            bool validSession = false;
-            await authentication.Open();
+            await session.ReadAsync();
+            response = await session.SendAsync($"login {username}");
 
-            string password = await authentication.GetPassword();
-
-            if (string.IsNullOrEmpty(password))
+            if (response.Contains("Cached credentials not found."))
             {
-                await session.Quit(true);
-                return null;
-            }
-
-            await session.SendCommand(password);
-            await session.WaitForResponse("Logging in user");
-
-            await authentication.SetMessage("Logging in...");
-
-            // this doesnt work?
-            if (await session.WaitForResponse("Please confirm the login in the Steam Mobile app on your phone.", 20000))
-            {
-                for (int i = 0; i < 10; i++)
+                if (await HandleLogin(false))
                 {
-                    if (await session.WaitForResponse("Waiting for user info...OK"))
-                    {
-                        validSession = true;
-                        break;
-                    }
+                    activeSession = session;
+                    authenticationModal?.UpdateStatus(AuthenticationStatus.Success);
+                    authenticationModal?.UpdateMessage("Logged in", false);
+
+                    isTryingToAuthenticate = false;
+                    return true;
+                }
+                else
+                {
+                    isTryingToAuthenticate = false;
+                    return false;
                 }
             }
-            else if (await session.WaitForResponse("Rate Limit Exceeded"))
+            else if (response.Contains("Waiting for user info"))
             {
-                await authentication.SetMessage("Rate limited");
-                return null;
-            }
-            else
-            {
-                validSession = true;
+                activeSession = session;
+                authenticationModal?.UpdateStatus(AuthenticationStatus.Success);
+                authenticationModal?.UpdateMessage("Logged in", false);
+
+                isTryingToAuthenticate = false;
+                return true;
             }
 
-            if (!validSession)
+            authenticationModal?.UpdateMessage("Unknown error", true);
+
+            // funcs
+
+            async Task GetCredentials()
             {
-                await authentication.SetMessage("Failed to login");
-                return null;
+                if (authenticationModal == null)
+                    authenticationModal = await UILinker.GetAuthenticationModal(username);
+
+                await authenticationModal.UpdateStatus(AuthenticationStatus.Login);
+                (username, password) = await authenticationModal.GetCredentials();
+                await authenticationModal.UpdateStatus(AuthenticationStatus.LoggingIn);
+
+                await ConfigManager.SetConfigValue(ConfigManager.ConfigKeys.SteamUsername, username);
             }
-            else
+
+            async Task<bool> HandleLogin(bool isRetry)
             {
-                await authentication.Complete();
+                if (string.IsNullOrEmpty(password))
+                    await GetCredentials();
+
+                if (isRetry)
+                {
+                    await session.SendAsync($"login {username}");
+                }
+
+                response = await session.SendAsync(password!);
+
+                if (response.Contains("This account is protected by a Steam Guard mobile authenticator."))
+                {
+                    authenticationModal?.UpdateMessage("Waiting for steam guard confirmation", false);
+                    response = await session.SendAsync("");
+
+                    if (response.Contains("Waiting for user info"))
+                        return true;
+
+                    authenticationModal?.UpdateStatus(AuthenticationStatus.Fail);
+                    authenticationModal?.UpdateMessage("Failed to login", true);
+                    return false;
+                }
+                else if (response.Contains("Invalid Password"))
+                {
+                    authenticationModal?.UpdateMessage("Invalid password", true);
+                    password = null;
+
+                    return await HandleLogin(true);
+                }
+                else if (response.Contains("Rate Limit Exceeded"))
+                {
+                    authenticationModal?.UpdateStatus(AuthenticationStatus.Fail);
+                    authenticationModal?.UpdateMessage("Rate limited", true);
+
+                    return false;
+                }
+
+                return false;
             }
         }
+        catch (TaskCanceledException)
+        {
+            isTryingToAuthenticate = false;
+            return false;
+        }
 
-        return session;
+        isTryingToAuthenticate = false;
+        return false;
     }
 
-
-    private class Session : IDisposable
+    public class Session
     {
-        private SemaphoreSlim outputLock = new SemaphoreSlim(1);
-        private StringBuilder output = new StringBuilder();
+        private readonly Process process;
+        private StringBuilder stream;
 
-        private Process process;
-        private Thread readingThread;
-
-        public Session()
+        public Session(string bridgeScriptPath)
         {
-            process = new Process()
+            process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "steamcmd",
-
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
+                    FileName = bridgeScriptPath,
                     RedirectStandardInput = true,
-
+                    RedirectStandardOutput = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true
+                    CreateNoWindow = true,
                 }
             };
 
             process.Start();
+            stream = new StringBuilder();
 
-            readingThread = new Thread(ReadProgressOfExtraction);
-            readingThread.Start();
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data == null)
+                    return;
+
+                lock (stream)
+                {
+                    stream.Append(e.Data);
+                }
+            };
+
+            process.BeginOutputReadLine();
         }
 
-        private void ReadProgressOfExtraction()
+        public async Task<string> ReadAsync()
         {
-            int charNumber;
-
-            while (!process.HasExited)
+            while (true)
             {
-                while ((charNumber = process.StandardOutput.Read()) != -1)
+                await Task.Delay(50);
+                lock (stream)
                 {
-                    outputLock.Wait();
-                    Console.Write((char)charNumber);
-                    output.Append((char)charNumber);
-                    outputLock.Release();
+                    string msg = stream.ToString();
+                    int idx = msg.IndexOf('\x1E');
+                    if (idx >= 0)
+                    {
+                        string result = msg[..idx];
+                        stream.Clear();
+                        return result;
+                    }
                 }
             }
         }
 
-        public async Task SendCommand(string command)
+        public async Task<string> SendAsync(string command)
         {
-            await outputLock.WaitAsync();
-            output.Clear();
-            outputLock.Release();
+            await SendWithoutWaiting(command);
+            return await ReadAsync();
+        }
+
+        public async Task SendWithoutWaiting(string command)
+        {
+            lock (stream)
+            {
+                stream.Clear();
+            }
 
             await process.StandardInput.WriteLineAsync(command);
             await process.StandardInput.FlushAsync();
         }
 
-        public async Task<bool> WaitForResponse(string res, int timeoutMs = 3000)
-        {
-            using var cts = new CancellationTokenSource(timeoutMs);
-
-            try
-            {
-                while (!cts.Token.IsCancellationRequested)
-                {
-                    await outputLock.WaitAsync();
-                    string line = output.ToString();
-                    outputLock.Release();
-
-                    if (line.Contains(res))
-                        return true;
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                // timed out
-            }
-
-            return false;
-        }
-
-        public async Task Quit(bool force)
-        {
-            if (force)
-            {
-                process.Kill();
-                return;
-            }
-
-            await SendCommand("quit");
-            await process.WaitForExitAsync();
-        }
-
         public void Dispose()
         {
-            _ = Quit(false);
+            if (!process.HasExited) process.Kill();
+            process.Dispose();
         }
     }
 }

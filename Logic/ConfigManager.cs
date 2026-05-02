@@ -29,6 +29,7 @@ public static class ConfigManager
     {
         string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"{APPLICATION_NAME}.db");
         await Database_Manager.Init(dbPath);
+        await WallpaperEngine.Init(fullLoad);
 
         if (fullLoad)
         {

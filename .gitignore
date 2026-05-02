@@ -7,3 +7,8 @@ Logic/bin
 Logic/obj
 
 Build/Output
+
+.env
+build
+dist
+steamcmd_bridge.spec

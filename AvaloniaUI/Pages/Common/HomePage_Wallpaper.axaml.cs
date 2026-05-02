@@ -34,6 +34,7 @@ public partial class Common_Wallpaper : UserControl
     {
         skeleton_Shimmer.IsVisible = true;
         cont_DownloadStatus.IsVisible = false;
+        cont_ActiveWallpaperStatus.IsVisible = false;
 
         this.representing = null;
 
@@ -47,7 +48,9 @@ public partial class Common_Wallpaper : UserControl
         cancellationToken = new CancellationTokenSource();
 
         await InternalDraw(entry, cancellationToken.Token);
+
         RedrawStatus(SteamCMDManager.GetActiveStatus(entry.getId));
+        UpdateActiveStatus(WallpaperEngine.getActiveWallpaper);
 
         async Task InternalDraw(IWorkshopEntry entry, CancellationToken token)
         {
@@ -87,16 +90,20 @@ public partial class Common_Wallpaper : UserControl
         }
     }
 
-    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        SteamCMDManager.onDownloadChange -= UpdateDownloadStatus;
-        base.OnDetachedFromVisualTree(e);
-    }
-
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         SteamCMDManager.onDownloadChange += UpdateDownloadStatus;
+        WallpaperEngine.OnActiveWallpaperChange += UpdateActiveStatus;
+
         base.OnAttachedToVisualTree(e);
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        SteamCMDManager.onDownloadChange -= UpdateDownloadStatus;
+        WallpaperEngine.OnActiveWallpaperChange -= UpdateActiveStatus;
+
+        base.OnDetachedFromVisualTree(e);
     }
 
     private void UpdateDownloadStatus(long id, DownloadStatus status)
@@ -115,5 +122,16 @@ public partial class Common_Wallpaper : UserControl
         {
             lbl_DownloadStatus.Content = status!.ToString();
         }
+    }
+
+    private void UpdateActiveStatus(long? id)
+    {
+        if (id != representing?.getId)
+        {
+            cont_ActiveWallpaperStatus.IsVisible = false;
+            return;
+        }
+
+        cont_ActiveWallpaperStatus.IsVisible = true;
     }
 }

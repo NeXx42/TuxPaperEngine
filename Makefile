@@ -4,17 +4,31 @@ PROGRAM_NAME = TuxPaperEngine
 build:
 	rm -rf ${OUTPUT_DIR}/*
 	
+	# build bridge
+	cd SteamCMDBridge && \
+		python3 -m venv .env && \
+		./.env/bin/pip install -r requirements.txt && \
+		./.env/bin/pyinstaller steamcmd_bridge.py --onefile
+	
+	# build program
 	mkdir -p ${OUTPUT_DIR}/${PROGRAM_NAME}
 	dotnet publish AvaloniaUI/AvaloniaUI.csproj \
 		-c Release \
 		-r linux-x64 \
 		--self-contained true \
 		/p:PublishSingleFile=false \
-		-o ${OUTPUT_DIR}/${PROGRAM_NAME}
+		-o ${OUTPUT_DIR}/${PROGRAM_NAME}	
 
 publish:
 	rm -rf ${OUTPUT_DIR}/*
 	
+	# build bridge
+	cd SteamCMDBridge && \
+		python3 -m venv .env && \
+		./.env/bin/pip install -r requirements.txt && \
+		./.env/bin/pyinstaller steamcmd_bridge.py --onefile
+	
+	# build program
 	mkdir -p ${OUTPUT_DIR}/${PROGRAM_NAME}
 	dotnet publish AvaloniaUI/AvaloniaUI.csproj \
 		-c Release \

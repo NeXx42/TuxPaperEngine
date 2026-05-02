@@ -40,6 +40,8 @@ public partial class Modal_Downloader : UserControl, IModal
 
     public bool isBlocking => inDownload;
 
+    public Task Exit() => Task.CompletedTask;
+
     private async Task Install()
     {
         if (string.IsNullOrEmpty(selectedDir))

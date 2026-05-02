@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using AvaloniaUI.Common;
 using Logic;
 using Logic.db;
 
@@ -17,9 +18,24 @@ public partial class SettingsPage_Common_Textbox : UserControl
         InitializeComponent();
     }
 
-    public UserControl Init(string lbl, ConfigManager.ConfigKeys key)
+    public UserControl Init(string lbl, ConfigManager.ConfigKeys key, Action<Common_Button>? buttonHandler = null)
     {
         configKey = key;
+
+        if (buttonHandler != null)
+        {
+            btn.IsVisible = true;
+            cont.ColumnDefinitions = [new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto)];
+
+            btn.ClearCallback();
+            buttonHandler(btn);
+        }
+        else
+        {
+            btn.IsVisible = false;
+            cont.ColumnDefinitions = [];
+        }
+
         return Init(lbl);
     }
 

@@ -20,9 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logic\Logic.csproj" />
-    <EngineFiles Include="..\Engine\build\output\**\*.*" />
   </ItemGroup>
-  <Target Name="CopyFolder" AfterTargets="Build">
-    <Copy SourceFiles="@(EngineFiles)" DestinationFiles="@(EngineFiles->'$(OutputPath)Engine\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-  </Target>
+  <ItemGroup>
+    <None Include="..\SteamCMDBridge\dist\steamcmd_bridge">
+      <Link>steamcmd_bridge</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

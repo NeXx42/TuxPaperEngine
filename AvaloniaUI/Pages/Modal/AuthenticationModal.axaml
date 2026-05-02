@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Common.AuthenticationModal"
+  xmlns:Common="clr-namespace:AvaloniaUI.Common">
+  <Border VerticalAlignment="Center" HorizontalAlignment="Center" Width="500" BorderBrush="rgb(46, 46, 56)" BorderThickness="1" Background="rgb(16, 16, 17)" CornerRadius="10">
+    <StackPanel Margin="5" Spacing="10">
+      <Label HorizontalAlignment="Center">SteamCMD Login</Label>
+
+      <Grid ColumnDefinitions="100 5 *">
+        <Label>Username</Label>
+        <TextBox x:Name="inp_username" Grid.Column="2"/>
+      </Grid>
+      <Grid ColumnDefinitions="100 5 *">
+        <Label>Password</Label>
+        <TextBox x:Name="inp_password" Grid.Column="2"/>
+      </Grid>
+      <Label x:Name="lbl_msg" HorizontalAlignment="Center" Classes="Warning">
+        <Label.Styles>
+          <Style Selector="Label.Error">
+            <Setter Property="Foreground" Value="Red"/>
+          </Style>
+          <Style Selector="Label.Warning">
+            <Setter Property="Foreground" Value="Orange"/>
+          </Style>
+        </Label.Styles>
+        Errors
+      </Label>
+
+      <Grid Grid.Row="2" ColumnDefinitions="* 100 5 100" Height="30">
+        <Common:Common_Button x:Name="btn_Close" Label="Close" Grid.Column="1" />
+        <Common:Common_Button x:Name="btn_Act" Label="login" Classes="Positive" Grid.Column="3" />
+      </Grid>
+    </StackPanel>
+  </Border>
+</UserControl>

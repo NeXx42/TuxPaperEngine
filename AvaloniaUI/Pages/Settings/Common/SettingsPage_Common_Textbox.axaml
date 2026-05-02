@@ -1,9 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.Settings.Common.SettingsPage_Common_Textbox">
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.Settings.Common.SettingsPage_Common_Textbox"
+  xmlns:Common="clr-namespace:AvaloniaUI.Common">
   <Grid ColumnDefinitions="400, *" ColumnSpacing="5" Margin="5">
     <Label Content="Textbox" VerticalAlignment="Center" x:Name="lbl_Header"/>
-    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" x:Name="inp_Value"/>
+    <Grid Grid.Column="1" ColumnDefinitions="* 100" x:Name="cont">
+      <TextBox HorizontalAlignment="Stretch" x:Name="inp_Value"/>
+      <Common:Common_Button Margin="5 0 0 0" Label="Test" Grid.Column="2" x:Name="btn" Classes="Positive"/>
+    </Grid>
   </Grid>
 </UserControl>

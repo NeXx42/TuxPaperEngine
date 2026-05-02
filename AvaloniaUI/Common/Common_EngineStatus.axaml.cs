@@ -17,7 +17,9 @@ public partial class Common_EngineStatus : UserControl
 
         if (!Design.IsDesignMode)
         {
-            WallpaperEngine.OnStatusChange += () => _ = RefreshStatus();
+            WallpaperEngine.OnEngineStatusChange += () => _ = RefreshStatus();
+            WallpaperEngine.OnActiveWallpaperChange += async (_) => await RefreshStatus();
+
             _ = RefreshStatus();
         }
     }
@@ -31,11 +33,9 @@ public partial class Common_EngineStatus : UserControl
 
             try
             {
-                dbo_Config? active = await ConfigManager.GetConfigValue(ConfigManager.ConfigKeys.LastSetWallpaper);
-
-                if (active != null && long.TryParse(active.value, out long id))
+                if (WallpaperEngine.getActiveWallpaper.HasValue)
                 {
-                    if (WorkshopManager.TryGetWallpaperEntry(id, out WorkshopEntry? item) && item != null)
+                    if (WorkshopManager.TryGetWallpaperEntry(WallpaperEngine.getActiveWallpaper.Value, out WorkshopEntry? item) && item != null)
                     {
                         await item.DecodeBasic();
                         activeWallpaper = item.title;

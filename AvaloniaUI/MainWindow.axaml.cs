@@ -6,17 +6,17 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using AvaloniaUI.Common;
 using AvaloniaUI.Interfaces;
 using AvaloniaUI.Pages.Modal;
 using Logic;
+using Logic.Interfaces;
 
 namespace AvaloniaUI;
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window, IUILinker
 {
     public static MainWindow? instance { private set; get; }
-    public static IAuthenticationModal getAuthenticationModal => instance!.modal_auth;
-
     private IModal? activeModal;
 
     public MainWindow()
@@ -27,6 +27,8 @@ public partial class MainWindow : Window
 
         if (Design.IsDesignMode)
             return;
+
+        UILinker.Register(this);
 
         RegisterScreens();
         _ = CloseModal();
@@ -109,14 +111,32 @@ public partial class MainWindow : Window
         return modal;
     }
 
-    public static async Task CloseModal()
+    public static async Task CloseModal() => await instance!.CloseModals();
+
+    public async Task CloseModals()
     {
         if (instance!.activeModal?.isBlocking ?? false)
             return;
+
+        if (instance!.activeModal != null)
+        {
+            await instance.activeModal.Exit();
+        }
 
         instance!.modalContainer.Children.Clear();
         instance!.activeModal = null;
 
         instance!.modalContainer.IsVisible = false;
+    }
+
+    public async Task<IAuthenticationModal> OpenAuthenticationModal(string? existingUsername = null)
+    {
+        return await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            AuthenticationModal modal = await OpenModal<AuthenticationModal>();
+            modal.Open(existingUsername);
+
+            return modal;
+        });
     }
 }

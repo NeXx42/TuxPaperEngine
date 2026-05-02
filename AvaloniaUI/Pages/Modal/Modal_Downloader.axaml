@@ -3,7 +3,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="AvaloniaUI.Pages.Modal.Modal_Downloader"
   xmlns:Common="clr-namespace:AvaloniaUI.Common">
-  <Border BorderThickness="1" BorderBrush="rgb(34, 34, 40)" Width="400" Height="250" Background="black" CornerRadius="10">
+  <Border BorderThickness="1" BorderBrush="rgb(46, 46, 56)" Width="400" Height="250" Background="rgb(22, 22, 25)" CornerRadius="10">
     <Grid RowDefinitions="30 * 35" Margin="10">
       <Label Content="Download" HorizontalAlignment="Center" FontSize="16"/>
 
