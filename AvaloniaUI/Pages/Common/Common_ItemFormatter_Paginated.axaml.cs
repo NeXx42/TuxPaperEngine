@@ -19,7 +19,43 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
     private Common_Wallpaper[] generatedUI;
     private IWorkshopEntry[]? entries;
 
-    private int currentPage = 0;
+    private int currentPage
+    {
+        set
+        {
+            m_currentPage = value;
+
+            int lowestPage = Math.Max(currentPage - 3, 1);
+            int pageNum = lowestPage;
+
+            Common_Button[] btns = [
+                btn_Page_1,
+                btn_Page_2,
+                btn_Page_3,
+                btn_Page_4,
+                btn_Page_5,
+            ];
+
+            for (int i = 0; i < 5; i++)
+            {
+                currentPageNavigateOptions[i] = pageNum;
+                btns[i].Label = pageNum.ToString();
+
+                if (pageNum == currentPage)
+                {
+                    btns[i].Classes.Add("Positive2");
+                }
+                else
+                {
+                    btns[i].Classes.Remove("Positive2");
+                }
+
+                pageNum++;
+            }
+        }
+        get => m_currentPage;
+    }
+    private int m_currentPage = 0;
     private int[] currentPageNavigateOptions;
 
     public override long? currentlySelectedWallpaper
@@ -64,6 +100,8 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
         btn_Page_3.RegisterClick(() => ChangePageNumber(2));
         btn_Page_4.RegisterClick(() => ChangePageNumber(3));
         btn_Page_5.RegisterClick(() => ChangePageNumber(4));
+
+        btn_Page_1.Classes.Add("Positive2");
     }
 
     public override async Task Draw(bool additive, bool resetPaging)
@@ -72,7 +110,7 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
 
         if (resetPaging)
         {
-            currentPage = 0;
+            currentPage = 1;
         }
 
         grid_Content_Container.IsVisible = true;
@@ -90,7 +128,10 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
             take = ENTRIES_PER_PAGE,
 
             orderId = filter?.GetOrder() ?? 0,
+
             textFilter = filter?.GetTextFilter(),
+            resolutionFilter = filter?.GetSelectedResolution(),
+
             tags = filter?.GetTagFilter()
         });
 
@@ -132,34 +173,6 @@ public partial class Common_ItemFormatter_Paginated : ItemFormatterBase
     {
         currentPage = currentPageNavigateOptions[navigateIndex];
         currentlySelectedWallpaper = null;
-
-        int lowestPage = Math.Max(currentPage - 2, 1);
-        int pageNum = lowestPage;
-
-        Common_Button[] btns = [
-            btn_Page_1,
-            btn_Page_2,
-            btn_Page_3,
-            btn_Page_4,
-            btn_Page_5,
-        ];
-
-        for (int i = 0; i < 5; i++)
-        {
-            currentPageNavigateOptions[i] = pageNum;
-            btns[i].Label = pageNum.ToString();
-
-            if (pageNum == currentPage)
-            {
-                btns[i].Classes.Add("Positive2");
-            }
-            else
-            {
-                btns[i].Classes.Remove("Positive2");
-            }
-
-            pageNum++;
-        }
 
         await Draw(false, false);
     }

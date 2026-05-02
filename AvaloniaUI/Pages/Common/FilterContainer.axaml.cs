@@ -12,6 +12,7 @@ public interface IFilterHandler
 
     public int GetOrder();
     public string? GetTextFilter();
+    public string? GetSelectedResolution();
     public HashSet<string> GetTagFilter();
 }
 
@@ -51,7 +52,8 @@ public partial class FilterContainer : UserControl, IFilterHandler
         inInit = true;
         InitializeComponent();
 
-        inp_TxtFilter.KeyUp += (_, __) => refilterRequest?.Invoke();
+        inp_TxtFilter.KeyUp += (_, __) => RequestRefresh();
+        inp_Dropdown.SelectionChanged += (_, __) => RequestRefresh();
     }
 
     public void Bind(Action onRefilter, params string[] ordering)
@@ -102,8 +104,24 @@ public partial class FilterContainer : UserControl, IFilterHandler
         inInit = false;
     }
 
+    public void DrawDropdowns(string[] resolutions)
+    {
+        inInit = true;
+        inp_Dropdown.IsVisible = resolutions.Length > 0;
+
+        if (resolutions.Length > 0)
+        {
+            inp_Dropdown.ItemsSource = (string[])["Everything", .. resolutions];
+            inp_Dropdown.SelectedIndex = 0;
+        }
+
+        inInit = false;
+    }
+
     public int GetOrder() => currentOrderBy;
     public string? GetTextFilter() => inp_TxtFilter.Text;
+    public string? GetSelectedResolution() => inp_Dropdown.SelectedIndex == 0 ? null : inp_Dropdown.SelectedValue?.ToString();
+
     public HashSet<string> GetTagFilter() => tagsUI?.Where(x => x.isSelected).Select(x => x.tag ?? string.Empty).ToHashSet() ?? new HashSet<string>();
 
     private void RequestRefresh()

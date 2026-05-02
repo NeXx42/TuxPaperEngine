@@ -48,6 +48,10 @@ public static class SteamWorkshopManager
                 entries = await ScrapeAllWorkshopElements(doc, activeQuery.Token)
             };
         }
+        catch (TaskCanceledException)
+        {
+            return new DataFetchResponse();
+        }
         catch (Exception e)
         {
             return new DataFetchResponse(e);
@@ -107,7 +111,8 @@ public static class SteamWorkshopManager
         HtmlNodeCollection allTags = doc.DocumentNode.SelectNodes("//input[@class='inputTagsFilter']");
         tags = allTags.Select(x => x?.GetAttributeValue("value", "")!).Order().ToArray();
 
-        resolutions = [];
+        var node = doc.DocumentNode.SelectSingleNode("//div[@class='tag_category_desc' and normalize-space(text())='Resolution']");
+        resolutions = node.NextSibling.NextSibling.ChildNodes.Select(x => x?.GetAttributeValue("value", "")!).Where(x => !string.IsNullOrEmpty(x) && x != "-1").Order().ToArray();
     }
 
 
@@ -118,6 +123,11 @@ public static class SteamWorkshopManager
         if (!string.IsNullOrEmpty(filter.textFilter))
         {
             sb.Append($"&searchtext={filter.textFilter}");
+        }
+
+        if (!string.IsNullOrEmpty(filter.resolutionFilter))
+        {
+            sb.Append($"&requiredtags[]={filter.resolutionFilter.Replace(" ", "+")}");
         }
 
         if (filter.tags != null)

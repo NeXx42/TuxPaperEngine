@@ -64,6 +64,8 @@ public partial class Common_ItemFormatter_EndlessGrid : ItemFormatterBase
 
             orderId = filter?.GetOrder() ?? 0,
             textFilter = filter?.GetTextFilter(),
+            resolutionFilter = filter?.GetSelectedResolution(),
+
             tags = filter?.GetTagFilter(),
         });
 

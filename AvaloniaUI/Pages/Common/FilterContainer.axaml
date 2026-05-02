@@ -7,7 +7,15 @@
     <Border Background="#050506" BorderThickness="0 0 0 1" BorderBrush="rgb(34, 34, 40)">
       <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
-          <TextBox Margin="5 0 0 0" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers" Height="35"/>
+          <TextBox Margin="5 0 0 0" Width="300" CornerRadius="8" Background="rgb(20, 20, 22)" BorderBrush="rgb(46, 46, 56)" x:Name="inp_TxtFilter" Watermark="Search wallpapers" Height="35">
+            <TextBox.Styles>
+              <Style Selector="TextBox:pointerover">
+                <Setter Property="Background" Value="rgb(32, 32, 35)"/>
+                <Setter Property="BorderBrush" Value="rgb(46, 46, 56)" />
+              </Style>
+            </TextBox.Styles>
+          </TextBox>
+
           <Common:Common_EngineStatus x:Name="EngineStatus" Height="35"/>
         </StackPanel>
       </Grid>
@@ -20,6 +28,15 @@
     </Border>
 
     <Grid Grid.Row="2">
+      <ComboBox VerticalAlignment="Center" Margin="15 0 0 0" Width="300" x:Name="inp_Dropdown" CornerRadius="8" BorderBrush="rgb(46, 46, 56)" Background="rgb(20, 20, 22)" Height="25">
+        <ComboBox.Styles>
+          <Style Selector="ComboBox:pointerover /template/ Border#Background">
+            <Setter Property="Background" Value="rgb(32, 32, 35)"/>
+            <Setter Property="BorderBrush" Value="rgb(46, 46, 56)" />
+          </Style>
+        </ComboBox.Styles>
+      </ComboBox>
+
       <Grid HorizontalAlignment="Right" Height="25" Margin="0 0 15 0">
         <Border CornerRadius="8" ClipToBounds="True">
           <StackPanel Background="rgb(46, 46, 56)" Orientation="Horizontal" Spacing="1" x:Name="cont_Ordering">

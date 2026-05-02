@@ -7,5 +7,7 @@ public struct DataFetchRequest
 
     public int orderId;
     public string? textFilter;
+    public string? resolutionFilter;
+
     public HashSet<string>? tags;
 }
