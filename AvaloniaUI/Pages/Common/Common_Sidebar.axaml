@@ -13,7 +13,7 @@
         <Grid RowDefinitions="Auto *">
           <StackPanel>
             <Grid Height="300" VerticalAlignment="Top" Background="Red">
-              <Border x:Name="img_SidePanel_Icon" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+              <Image x:Name="img_SidePanel_Icon" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
 
               <Grid Background="Green" VerticalAlignment="Bottom" Height="80">
                 <Grid.Background>

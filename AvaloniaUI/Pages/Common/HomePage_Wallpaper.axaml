@@ -25,8 +25,10 @@
     </Border.Transitions>
 
     <Grid IsHitTestVisible="False">
-      <Border x:Name="img_Icon" IsHitTestVisible="False" CornerRadius="3" ClipToBounds="True">
-        <Rectangle x:Name="skeleton_Shimmer" Width="100">
+      <Image x:Name="img_Icon" />
+
+      <Border x:Name="skeleton_Shimmer" IsHitTestVisible="False" CornerRadius="3" ClipToBounds="True">
+        <Rectangle Width="100">
           <Rectangle.Fill>
             <LinearGradientBrush StartPoint="0,0" EndPoint="100%,0%">
               <GradientStop Color="#00111111" Offset="0"/>
@@ -53,7 +55,6 @@
           </Rectangle.Styles>
         </Rectangle>
       </Border>
-      <Image x:Name="img_Gif" />
 
       <Border VerticalAlignment="Bottom" Height="40" Background="#a9000000" IsHitTestVisible="False">
         <Label x:Name="lbl_Title" Content="Test" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" IsHitTestVisible="False"/>

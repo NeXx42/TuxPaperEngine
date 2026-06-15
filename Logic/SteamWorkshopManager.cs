@@ -124,7 +124,6 @@ public static class SteamWorkshopManager
                 id = long.Parse(r.publishedfileid),
                 name = r.title,
                 imgUrl = r.preview_url,
-                imgGif = r.preview_url
             }).ToArray());
         }
         catch (TaskCanceledException)

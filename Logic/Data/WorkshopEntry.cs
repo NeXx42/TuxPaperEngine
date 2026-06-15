@@ -22,7 +22,6 @@ public class WorkshopEntry : IWorkshopEntry
     public long getId => id;
     public string? getTitle => title;
     public string? getIconPath => string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, iconPath!);
-    public string? getGifPath => string.Empty;
 
     public string[]? getTags => tags;
 

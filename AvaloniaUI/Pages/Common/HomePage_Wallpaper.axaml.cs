@@ -41,7 +41,7 @@ public partial class Common_Wallpaper : UserControl
         this.representing = null;
 
         lbl_Title.Content = string.Empty;
-        img_Icon.Background = null;
+        ImageBehavior.SetAnimatedSource(img_Icon, null!);
     }
 
     public async void StartDraw(IWorkshopEntry entry, ItemFormatterBase master)
@@ -62,28 +62,17 @@ public partial class Common_Wallpaper : UserControl
             this.representing = entry;
             lbl_Title.Content = entry.getTitle;
 
-            img_Icon.Background = null;
+            ImageBehavior.SetAnimatedSource(img_Icon, null!);
 
-            if (false && !string.IsNullOrEmpty(entry.getGifPath))
-            {
-                img_Icon.IsVisible = false;
-                img_Gif.IsVisible = true;
+            if (token.IsCancellationRequested)
+                return;
 
-                ImageBehavior.SetAnimatedSource(img_Gif, new Uri(entry.getGifPath));
-            }
-            else
-            {
-                img_Icon.IsVisible = true;
-                img_Gif.IsVisible = true;
+            AnimatedImageSource? brush = await ImageFetcher.GetIcon(entry, token);
 
-                ImageBrush? brush = await ImageFetcher.GetIcon(entry, token);
+            img_Icon.IsVisible = true;
 
-                if (token.IsCancellationRequested)
-                    return;
-
-                img_Icon.Background = brush;
-            }
-
+            if (brush != null)
+                ImageBehavior.SetAnimatedSource(img_Icon, brush);
         }
     }
 

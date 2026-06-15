@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AnimatedImage.Avalonia;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -47,7 +48,7 @@ public partial class Common_Sidebar : UserControl
     public void Open()
     {
         scroll_Content.ScrollToHome();
-        img_SidePanel_Icon.Background = null;
+        ImageBehavior.SetAnimatedSource(img_SidePanel_Icon, null!);
         lbl_SidePanel_Title.Content = "";
     }
 
@@ -65,8 +66,10 @@ public partial class Common_Sidebar : UserControl
         cont_Content.IsVisible = true;
 
         lbl_SidePanel_Title.Content = entry.getTitle;
-        img_SidePanel_Icon.Background = await ImageFetcher.GetIcon(entry!);
         DrawTags(entry.getTags);
+
+        AnimatedImageSource? img = await ImageFetcher.GetIcon(entry!);
+        ImageBehavior.SetAnimatedSource(img_SidePanel_Icon, img ?? null!);
 
         await (content?.OnSelectWallpaper(this, entry) ?? Task.CompletedTask);
     }
