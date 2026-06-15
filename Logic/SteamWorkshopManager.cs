@@ -53,24 +53,31 @@ public static class SteamWorkshopManager
     ];
 
     public readonly static string[] resolutions = [
+        "Standard Definition",
         "1280 x 720",
         "1366 x 768",
         "1920 x 1080",
         "2560 x 1440",
         "3840 x 2160",
-        "2560 x 1080",
-        "3440 x 1440",
-        "3840 x 1080",
-        "5120 x 1440",
-        "7680 x 2160",
-        "4096 x 768",
-        "5760 x 1080",
-        "7680 x 1440",
-        "11520 x 2160",
-        "720 x 1280",
-        "1080 x 1920",
-        "1440 x 2560",
-        "2160 x 3840"
+        "Ultrawide Standard Definition",
+        "Ultrawide 2560 x 1080",
+        "Ultrawide 3440 x 1440",
+        "Dual Standard Definition",
+        "Dual 3840 x 1080",
+        "Dual 5120 x 1440",
+        "Dual 7680 x 2160",
+        "Triple Standard Definition",
+        "Triple 4096 x 768",
+        "Triple 5760 x 1080",
+        "Triple 7680 x 1440",
+        "Triple 11520 x 2160",
+        "Portrait Standard Definition",
+        "Portrait 720 x 1280",
+        "Portrait 1080 x 1920",
+        "Portrait 1440 x 2560",
+        "Portrait 2160 x 3840",
+        "Other resolution",
+        "Dynamic resolution"
     ];
 
     public static async Task<DataFetchResponse> FetchItems(DataFetchRequest filter, bool recacheFilters)
@@ -124,6 +131,7 @@ public static class SteamWorkshopManager
                 id = long.Parse(r.publishedfileid),
                 name = r.title,
                 imgUrl = r.preview_url,
+                tags = r.tags.Select(t => t.display_name).ToArray()
             }).ToArray());
         }
         catch (TaskCanceledException)
@@ -288,10 +296,6 @@ public static class SteamWorkshopManager
     {
         StringBuilder sb = new StringBuilder($"https://steamcommunity.com/workshop/browse/?appid={ConfigManager.WALLPAPER_ENGINE_ID}&");
 
-        if (!string.IsNullOrEmpty(filter.textFilter))
-        {
-            sb.Append($"&searchtext={filter.textFilter}");
-        }
 
         if (!string.IsNullOrEmpty(filter.resolutionFilter))
         {
@@ -315,6 +319,11 @@ public static class SteamWorkshopManager
 
         sb.Append($"&p={filter.skip}");
         sb.Append("&rss=1");
+
+        if (!string.IsNullOrEmpty(filter.textFilter))
+        {
+            sb.Append($"&searchtext={filter.textFilter}");
+        }
 
         return sb.ToString();
     }

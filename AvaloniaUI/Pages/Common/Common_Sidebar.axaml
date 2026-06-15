@@ -25,7 +25,7 @@
               </Grid>
 
               <Label x:Name="lbl_SidePanel_Title" Content="NAME" HorizontalAlignment="Left" FontSize="18" Margin="5 0 0 35" VerticalAlignment="Bottom"/>
-              <StackPanel x:Name="container_Tags" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="30" Margin="5"/>
+              <StackPanel x:Name="container_Tags" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="25" Margin="5" Spacing="2"/>
             </Grid>
 
             <Common:Common_Button x:Name="btn_Act" Label="Apply Wallpaper" Margin="10 5" Height="37" Classes="Positive"/>

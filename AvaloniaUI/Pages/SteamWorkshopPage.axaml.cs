@@ -39,11 +39,11 @@ public partial class SteamWorkshopPage : UserControl
     {
         if (!hasValidFilters)
         {
-            await Filters.EngineStatus.RefreshStatus();
-            var res = await SteamWorkshopManager.FetchItems(req, true);
-
             Filters.DrawTags(SteamWorkshopManager.tags);
             Filters.DrawDropdowns(SteamWorkshopManager.resolutions);
+
+            await Filters.EngineStatus.RefreshStatus();
+            var res = await SteamWorkshopManager.FetchItems(req, true);
 
             hasValidFilters = true;
             return res;
