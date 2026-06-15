@@ -42,8 +42,8 @@ public partial class SteamWorkshopPage : UserControl
             await Filters.EngineStatus.RefreshStatus();
             var res = await SteamWorkshopManager.FetchItems(req, true);
 
-            Filters.DrawTags(SteamWorkshopManager.getTags);
-            Filters.DrawDropdowns(SteamWorkshopManager.getResolutions);
+            Filters.DrawTags(SteamWorkshopManager.tags);
+            Filters.DrawDropdowns(SteamWorkshopManager.resolutions);
 
             hasValidFilters = true;
             return res;

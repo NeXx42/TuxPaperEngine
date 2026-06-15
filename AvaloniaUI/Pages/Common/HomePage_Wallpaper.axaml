@@ -52,8 +52,9 @@
             </Style>
           </Rectangle.Styles>
         </Rectangle>
-
       </Border>
+      <Image x:Name="img_Gif" />
+
       <Border VerticalAlignment="Bottom" Height="40" Background="#a9000000" IsHitTestVisible="False">
         <Label x:Name="lbl_Title" Content="Test" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" IsHitTestVisible="False"/>
       </Border>

@@ -20,8 +20,9 @@ public class WorkshopEntry : IWorkshopEntry
     private int decodeStatus;
 
     public long getId => id;
-    public string? getIconPath => string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, iconPath!);
     public string? getTitle => title;
+    public string? getIconPath => string.IsNullOrEmpty(path) ? string.Empty : Path.Combine(path, iconPath!);
+    public string? getGifPath => string.Empty;
 
     public string[]? getTags => tags;
 

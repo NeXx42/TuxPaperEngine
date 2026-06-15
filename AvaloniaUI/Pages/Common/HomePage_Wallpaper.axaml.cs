@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimatedImage.Avalonia;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
@@ -61,12 +63,27 @@ public partial class Common_Wallpaper : UserControl
             lbl_Title.Content = entry.getTitle;
 
             img_Icon.Background = null;
-            ImageBrush? brush = await ImageFetcher.GetIcon(entry, token);
 
-            if (token.IsCancellationRequested)
-                return;
+            if (false && !string.IsNullOrEmpty(entry.getGifPath))
+            {
+                img_Icon.IsVisible = false;
+                img_Gif.IsVisible = true;
 
-            img_Icon.Background = brush;
+                ImageBehavior.SetAnimatedSource(img_Gif, new Uri(entry.getGifPath));
+            }
+            else
+            {
+                img_Icon.IsVisible = true;
+                img_Gif.IsVisible = true;
+
+                ImageBrush? brush = await ImageFetcher.GetIcon(entry, token);
+
+                if (token.IsCancellationRequested)
+                    return;
+
+                img_Icon.Background = brush;
+            }
+
         }
     }
 

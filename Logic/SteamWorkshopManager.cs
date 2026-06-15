@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using HtmlAgilityPack;
 using Logic.Data;
 using Logic.Enums;
@@ -22,12 +24,178 @@ public static class SteamWorkshopManager
     private static HttpClient? m_Client;
     private static CancellationTokenSource? activeQuery;
 
-    private static string[]? tags;
-    private static string[]? resolutions;
+    public readonly static string[] tags = [
+         "Abstract",
+        "Animal",
+        "Anime",
+        "Cartoon",
+        "CGI",
+        "Cyberpunk",
+        "Fantasy",
+        "Game",
+        "Girls",
+        "Guys",
+        "Landscape",
+        "Medieval",
+        "Memes",
+        "MMD",
+        "Music",
+        "Nature",
+        "Pixel art",
+        "Relaxing",
+        "Retro",
+        "Sci-Fi",
+        "Sports",
+        "Technology",
+        "Television",
+        "Vehicle",
+        "Unspecified"
+    ];
 
-    public static string[] getTags => tags ?? [];
-    public static string[] getResolutions => resolutions ?? [];
+    public readonly static string[] resolutions = [
+        "1280 x 720",
+        "1366 x 768",
+        "1920 x 1080",
+        "2560 x 1440",
+        "3840 x 2160",
+        "2560 x 1080",
+        "3440 x 1440",
+        "3840 x 1080",
+        "5120 x 1440",
+        "7680 x 2160",
+        "4096 x 768",
+        "5760 x 1080",
+        "7680 x 1440",
+        "11520 x 2160",
+        "720 x 1280",
+        "1080 x 1920",
+        "1440 x 2560",
+        "2160 x 3840"
+    ];
 
+    public static async Task<DataFetchResponse> FetchItems(DataFetchRequest filter, bool recacheFilters)
+    {
+        try
+        {
+            await (activeQuery?.CancelAsync() ?? Task.CompletedTask);
+            activeQuery = new CancellationTokenSource();
+
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, BuildURLFromFilter(filter));
+            req.Headers.Add("x-valve-action-type", "OTEITVBA:Browse");
+            req.Headers.Add("x-valve-request-type", "routeAction");
+
+            string browseSort = "";
+
+            switch ((SteamWallpaperOrdering)filter.orderId)
+            {
+                default: browseSort = "trend"; break;
+                case SteamWallpaperOrdering.New: browseSort = "mostrecent"; break;
+                case SteamWallpaperOrdering.LastUpdated: browseSort = "lastupdated"; break;
+                case SteamWallpaperOrdering.MostSubscribed: browseSort = "totaluniquesubscribers"; break;
+            }
+
+            SteamPageRequest[] reqBody = [new SteamPageRequest(){
+                admin_view = false,
+                appid = ConfigManager.WALLPAPER_ENGINE_ID,
+                browse_sort =browseSort,
+                childpublishedfileid = "",
+                num_per_page = filter.take,
+                page = filter.skip,
+                required_apps_preset = 0,
+                search_text = filter.textFilter ?? "",
+                search_text_target = 0,
+                section = "readytouseitems",
+                trend_days = 7,
+                required_tags = [..(string.IsNullOrEmpty(filter.resolutionFilter) ? (string[])[] : [filter.resolutionFilter]), ..(filter.tags ?? [])]
+            }];
+
+            string json = JsonSerializer.Serialize(reqBody);
+            req.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var res = await httpClient.SendAsync(req, activeQuery.Token);
+
+            res.EnsureSuccessStatusCode();
+
+            string responseJson = await res.Content.ReadAsStringAsync();
+            SteamPageResponse response = JsonSerializer.Deserialize<SteamPageResponse>(responseJson);
+
+            return new DataFetchResponse(response.results.Select(r => new SteamWorkshopEntry()
+            {
+                id = long.Parse(r.publishedfileid),
+                name = r.title,
+                imgUrl = r.preview_url,
+                imgGif = r.preview_url
+            }).ToArray());
+        }
+        catch (TaskCanceledException)
+        {
+            return new DataFetchResponse();
+        }
+        catch (Exception e)
+        {
+            return new DataFetchResponse(e);
+        }
+    }
+
+    private struct SteamPageRequest
+    {
+        public bool admin_view { get; set; }
+        public int appid { get; set; }
+        public string browse_sort { get; set; }
+        public string childpublishedfileid { get; set; }
+        public int num_per_page { get; set; }
+        public int page { get; set; }
+        public int required_apps_preset { get; set; }
+        public string search_text { get; set; }
+        public int search_text_target { get; set; }
+        public string section { get; set; }
+        public int trend_days { get; set; }
+        public string[]? required_tags { get; set; }
+    }
+
+    private struct SteamPageResponse
+    {
+        public int eresult { get; set; }
+        public int page { get; set; }
+        public int total_pages { get; set; }
+        public int total_count { get; set; }
+        public string next_cursor { get; set; }
+        public SteamPageResponse_Entry[] results { get; set; }
+    }
+
+    public struct SteamPageResponse_Entry
+    {
+        public string publishedfileid { get; set; }
+        public string creator { get; set; }
+        public long consumer_appid { get; set; }
+        public int file_type { get; set; }
+        public string preview_url { get; set; }
+        public string title { get; set; }
+        public string short_description { get; set; }
+        public bool workshop_accepted { get; set; }
+        public long flags { get; set; }
+        public long views { get; set; }
+        public int time_created { get; set; }
+        public int time_updated { get; set; }
+        public string file_size { get; set; }
+        public SteamPageResponse_Entry_Tag[] tags { get; set; }
+        public int subscriptions { get; set; }
+        public int lifetime_subscriptions { get; set; }
+        public int favorited { get; set; }
+        public int lifetime_favorited { get; set; }
+        public string lifetime_playtime_sessions { get; set; }
+        public int star_rating { get; set; }
+        public int total_votes { get; set; }
+    }
+
+    public struct SteamPageResponse_Entry_Tag
+    {
+        public string tag { get; set; }
+        public string display_name { get; set; }
+    }
+
+
+    /*
     public static async Task<DataFetchResponse> FetchItems(DataFetchRequest filter, bool recacheFilters)
     {
         await (activeQuery?.CancelAsync() ?? Task.CompletedTask);
@@ -57,7 +225,7 @@ public static class SteamWorkshopManager
             return new DataFetchResponse(e);
         }
     }
-
+*/
     private static async Task<SteamWorkshopEntry[]> ScrapeAllWorkshopElements(HtmlDocument doc, CancellationToken token)
     {
         HtmlNodeCollection entries = doc.DocumentNode.SelectNodes("//div[@class='workshopItem']");
@@ -106,15 +274,16 @@ public static class SteamWorkshopManager
         return doc;
     }
 
-    private static async Task RecacheFilters(HtmlDocument doc)
-    {
-        HtmlNodeCollection allTags = doc.DocumentNode.SelectNodes("//input[@class='inputTagsFilter']");
-        tags = allTags.Select(x => x?.GetAttributeValue("value", "")!).Order().ToArray();
+    /*
+        private static async Task RecacheFilters(HtmlDocument doc)
+        {
+            HtmlNodeCollection allTags = doc.DocumentNode.SelectNodes("//input[@class='inputTagsFilter']");
+            tags = allTags.Select(x => x?.GetAttributeValue("value", "")!).Order().ToArray();
 
-        var node = doc.DocumentNode.SelectSingleNode("//div[@class='tag_category_desc' and normalize-space(text())='Resolution']");
-        resolutions = node.NextSibling.NextSibling.ChildNodes.Select(x => x?.GetAttributeValue("value", "")!).Where(x => !string.IsNullOrEmpty(x) && x != "-1").Order().ToArray();
-    }
-
+            var node = doc.DocumentNode.SelectSingleNode("//div[@class='tag_category_desc' and normalize-space(text())='Resolution']");
+            resolutions = node.NextSibling.NextSibling.ChildNodes.Select(x => x?.GetAttributeValue("value", "")!).Where(x => !string.IsNullOrEmpty(x) && x != "-1").Order().ToArray();
+        }
+    */
 
     private static string BuildURLFromFilter(DataFetchRequest filter)
     {
